@@ -1,0 +1,14 @@
+{
+  "slideStyle": "Whiteboard",
+  "colorScheme": "白板图风格 - 参考A股分析白板图",
+  "primaryColor": "#3B82F6",
+  "accentColor1": "#8B5CF6",
+  "accentColor2": "#10B981",
+  "neutralColor": "#374151",
+  "background": {
+    "type": "color",
+    "value": "#FEFEFE"
+  },
+  "fontTitle": "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+  "fontBody": "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif"
+}

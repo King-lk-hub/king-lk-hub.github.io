@@ -1,0 +1,20 @@
+{
+  "1": {
+    "imagePath": "assets/images/cover-bg.png"
+  },
+  "5": {
+    "imagePath": "assets/images/flow-chart.png"
+  },
+  "7": {
+    "imagePath": "assets/images/comparison-chart.png"
+  },
+  "8": {
+    "imagePath": "assets/images/data-dashboard.png"
+  },
+  "9": {
+    "imagePath": "assets/images/timeline.png"
+  },
+  "11": {
+    "imagePath": "assets/images/laoliu.png"
+  }
+}

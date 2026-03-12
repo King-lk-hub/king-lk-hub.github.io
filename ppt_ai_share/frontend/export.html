@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>导出PPT</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.min.js"></script>
+  <style>
+    * { font-family: 'Microsoft YaHei', sans-serif; }
+    .slide { width: 1440px; height: 810px; position: relative; margin: 20px auto; }
+  </style>
+</head>
+<body>
+  <button onclick="exportPPT()">导出PPT</button>
+  
+  <script>
+    async function exportPPT() {
+      let pptx = new PptxGenJS();
+      pptx.layout = 'LAYOUT_16x9';
+      
+      // 这里可以添加幻灯片内容
+      let slide = pptx.addSlide();
+      slide.addText('AI辅助开发分享', { x: 0.5, y: 0.5, w: 12, h: 1, fontSize: 32, bold: true, align: 'center', color: '3B82F6' });
+      
+      pptx.writeFile({ fileName: 'AI辅助开发分享_白板图版.pptx' });
+    }
+  </script>
+</body>
+</html>
