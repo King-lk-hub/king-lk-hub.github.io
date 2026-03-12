@@ -1,169 +1,278 @@
-// 单词轮播
+// 老六日记 - 主脚本
+
 document.addEventListener('DOMContentLoaded', function() {
-    const words = [
-        {
-            day: 'DAY 1',
-            title: 'abandon',
-            phonetic: '/əˈbændən/',
-            meaning: 'v. 放弃，遗弃',
-            example: 'He abandoned his car in the snow.'
-        },
-        {
-            day: 'DAY 1',
-            title: 'ability',
-            phonetic: '/əˈbɪləti/',
-            meaning: 'n. 能力，才能',
-            example: 'She has the ability to speak four languages.'
-        },
-        {
-            day: 'DAY 1',
-            title: 'abroad',
-            phonetic: '/əˈbrɔːd/',
-            meaning: 'adv. 在国外，到国外',
-            example: 'He studied abroad for three years.'
-        },
-        {
-            day: 'DAY 1',
-            title: 'absence',
-            phonetic: '/ˈæbsəns/',
-            meaning: 'n. 缺席，缺乏',
-            example: 'His absence from school was noticed.'
-        },
-        {
-            day: 'DAY 1',
-            title: 'absolute',
-            phonetic: '/ˈæbsəluːt/',
-            meaning: 'adj. 绝对的，完全的',
-            example: 'I have absolute confidence in you.'
+    // 初始化日期
+    initDate();
+    
+    // 初始化Tab切换
+    initTabs();
+    
+    // 初始化日记功能
+    initDiary();
+    
+    // 初始化英语学习
+    initEnglish();
+});
+
+// ===== 日期初始化 =====
+function initDate() {
+    const now = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+    const dateStr = now.toLocaleDateString('zh-CN', options);
+    
+    document.getElementById('currentDate').textContent = dateStr;
+    document.getElementById('diaryDate').textContent = dateStr;
+}
+
+// ===== Tab切换功能 =====
+function initTabs() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.dataset.tab;
+            
+            // 切换按钮状态
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // 切换内容
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === tabId) {
+                    content.classList.add('active');
+                }
+            });
+        });
+    });
+}
+
+// ===== 日记功能 =====
+function initDiary() {
+    const saveBtn = document.getElementById('saveDiary');
+    const titleInput = document.getElementById('diaryTitle');
+    const contentInput = document.getElementById('diaryContent');
+    const weatherSelect = document.getElementById('weatherSelect');
+    const moodSelect = document.getElementById('moodSelect');
+    
+    // 加载已保存的日记
+    loadDiaries();
+    
+    // 保存日记
+    saveBtn.addEventListener('click', () => {
+        const title = titleInput.value.trim();
+        const content = contentInput.value.trim();
+        const weather = weatherSelect.value;
+        const mood = moodSelect.value;
+        
+        if (!content) {
+            alert('请输入日记内容！');
+            return;
         }
-    ];
+        
+        const diary = {
+            id: Date.now(),
+            title: title || '无标题',
+            content: content,
+            weather: weather,
+            mood: mood,
+            date: new Date().toISOString(),
+            dateStr: document.getElementById('diaryDate').textContent
+        };
+        
+        // 保存到localStorage
+        const diaries = JSON.parse(localStorage.getItem('laoliu_diaries') || '[]');
+        diaries.unshift(diary);
+        localStorage.setItem('laoliu_diaries', JSON.stringify(diaries));
+        
+        // 清空输入
+        titleInput.value = '';
+        contentInput.value = '';
+        
+        // 刷新列表
+        loadDiaries();
+        
+        // 提示成功
+        alert('日记保存成功！');
+    });
+}
 
-    let currentIndex = 0;
-    const card = document.querySelector('.showcase-card');
-    const dots = document.querySelectorAll('.dot');
-    const prevBtn = document.querySelector('.nav-btn.prev');
-    const nextBtn = document.querySelector('.nav-btn.next');
-
-    function updateCard(index) {
-        const word = words[index];
-        card.innerHTML = `
-            <div class="word-day">${word.day}</div>
-            <div class="word-content">
-                <h3 class="word-title">${word.title}</h3>
-                <p class="word-phonetic">${word.phonetic}</p>
-                <p class="word-meaning">${word.meaning}</p>
-                <p class="word-example">${word.example}</p>
+// 加载日记列表
+function loadDiaries() {
+    const entriesContainer = document.getElementById('diaryEntries');
+    const diaries = JSON.parse(localStorage.getItem('laoliu_diaries') || '[]');
+    
+    if (diaries.length === 0) {
+        entriesContainer.innerHTML = `
+            <div class="empty-state">
+                <span class="empty-icon">📝</span>
+                <p>还没有日记，开始记录你的第一天吧！</p>
             </div>
         `;
+        return;
+    }
+    
+    entriesContainer.innerHTML = diaries.map(diary => `
+        <div class="diary-entry" data-id="${diary.id}">
+            <div class="entry-header">
+                <span class="entry-date">${diary.dateStr} ${diary.weather}</span>
+                <span class="entry-mood">${diary.mood}</span>
+            </div>
+            <h4 class="entry-title">${escapeHtml(diary.title)}</h4>
+            <p class="entry-content">${escapeHtml(diary.content)}</p>
+            <div class="entry-actions">
+                <button class="btn-entry view" onclick="viewDiary(${diary.id})">查看</button>
+                <button class="btn-entry delete" onclick="deleteDiary(${diary.id})">删除</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// 查看日记详情
+function viewDiary(id) {
+    const diaries = JSON.parse(localStorage.getItem('laoliu_diaries') || '[]');
+    const diary = diaries.find(d => d.id === id);
+    if (diary) {
+        alert(`${diary.dateStr} ${diary.weather} ${diary.mood}\n\n【${diary.title}】\n\n${diary.content}`);
+    }
+}
+
+// 删除日记
+function deleteDiary(id) {
+    if (confirm('确定要删除这篇日记吗？')) {
+        const diaries = JSON.parse(localStorage.getItem('laoliu_diaries') || '[]');
+        const newDiaries = diaries.filter(d => d.id !== id);
+        localStorage.setItem('laoliu_diaries', JSON.stringify(newDiaries));
+        loadDiaries();
+    }
+}
+
+// HTML转义
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ===== 英语学习功能 =====
+function initEnglish() {
+    // 今日单词数据
+    const words = [
+        { word: 'abandon', phonetic: '/əˈbændən/', meaning: 'v. 放弃，遗弃', example: 'He abandoned his car in the snow.' },
+        { word: 'ability', phonetic: '/əˈbɪləti/', meaning: 'n. 能力，才能', example: 'She has the ability to speak four languages.' },
+        { word: 'abroad', phonetic: '/əˈbrɔːd/', meaning: 'adv. 在国外，到国外', example: 'He studied abroad for three years.' },
+        { word: 'absence', phonetic: '/ˈæbsəns/', meaning: 'n. 缺席，缺乏', example: 'His absence from school was noticed.' },
+        { word: 'absolute', phonetic: '/ˈæbsəluːt/', meaning: 'adj. 绝对的，完全的', example: 'I have absolute confidence in you.' },
+        { word: 'absorb', phonetic: '/əbˈsɔːb/', meaning: 'v. 吸收，吸引', example: 'Plants absorb water from the soil.' },
+        { word: 'abstract', phonetic: '/ˈæbstrækt/', meaning: 'adj. 抽象的 n. 摘要', example: 'This is an abstract concept.' },
+        { word: 'abundant', phonetic: '/əˈbʌndənt/', meaning: 'adj. 丰富的，充裕的', example: 'The region has abundant natural resources.' },
+        { word: 'academic', phonetic: '/ˌækəˈdemɪk/', meaning: 'adj. 学术的，学院的', example: 'She has an academic background.' },
+        { word: 'accelerate', phonetic: '/əkˈseləreɪt/', meaning: 'v. 加速，促进', example: 'The car began to accelerate.' }
+    ];
+    
+    let currentIndex = 0;
+    const learnedWords = JSON.parse(localStorage.getItem('laoliu_learned_words') || '[]');
+    
+    // 初始化单词展示
+    function updateWordCard(index) {
+        const word = words[index];
+        document.getElementById('currentWord').textContent = word.word;
+        document.getElementById('currentPhonetic').textContent = word.phonetic;
+        document.getElementById('currentMeaning').textContent = word.meaning;
+        document.getElementById('currentExample').textContent = word.example;
         
+        // 更新圆点
+        const dots = document.querySelectorAll('#wordDots .dot');
         dots.forEach((dot, i) => {
             dot.classList.toggle('active', i === index);
         });
     }
-
-    prevBtn.addEventListener('click', () => {
+    
+    // 初始化单词列表
+    function renderWordList() {
+        const tbody = document.getElementById('wordListBody');
+        tbody.innerHTML = words.map((word, index) => `
+            <div class="word-row">
+                <span class="col-num">${index + 1}</span>
+                <span class="col-word">${word.word}</span>
+                <span class="col-phonetic">${word.phonetic}</span>
+                <span class="col-meaning">${word.meaning}</span>
+                <span class="col-status">
+                    <button class="status-btn ${learnedWords.includes(word.word) ? 'learned' : ''}" 
+                            onclick="toggleLearned('${word.word}', this)">
+                        ${learnedWords.includes(word.word) ? '已学' : '学习'}
+                    </button>
+                </span>
+            </div>
+        `).join('');
+        
+        // 更新进度
+        updateProgress();
+    }
+    
+    // 更新进度
+    function updateProgress() {
+        document.getElementById('learnedCount').textContent = learnedWords.length;
+        document.getElementById('progressPercent').textContent = Math.round(learnedWords.length / words.length * 100) + '%';
+    }
+    
+    // 绑定事件
+    document.getElementById('prevWord').addEventListener('click', () => {
         currentIndex = (currentIndex - 1 + words.length) % words.length;
-        updateCard(currentIndex);
+        updateWordCard(currentIndex);
     });
-
-    nextBtn.addEventListener('click', () => {
+    
+    document.getElementById('nextWord').addEventListener('click', () => {
         currentIndex = (currentIndex + 1) % words.length;
-        updateCard(currentIndex);
+        updateWordCard(currentIndex);
     });
-
-    dots.forEach((dot, index) => {
+    
+    // 圆点点击
+    const dotsContainer = document.getElementById('wordDots');
+    dotsContainer.innerHTML = words.slice(0, 5).map((_, i) => 
+        `<span class="dot ${i === 0 ? 'active' : ''}" data-index="${i}"></span>`
+    ).join('');
+    
+    dotsContainer.querySelectorAll('.dot').forEach(dot => {
         dot.addEventListener('click', () => {
-            currentIndex = index;
-            updateCard(currentIndex);
+            currentIndex = parseInt(dot.dataset.index);
+            updateWordCard(currentIndex);
         });
     });
-
+    
+    // 初始化
+    updateWordCard(0);
+    renderWordList();
+    
     // 自动轮播
     setInterval(() => {
         currentIndex = (currentIndex + 1) % words.length;
-        updateCard(currentIndex);
+        updateWordCard(currentIndex);
     }, 5000);
+}
 
-    // 学习按钮点击
-    document.querySelectorAll('.btn-learn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            this.textContent = '已学';
-            this.style.background = '#27ae60';
-            this.disabled = true;
-        });
-    });
-
-    // 平滑滚动
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
-
-    // 导航栏滚动效果
-    let lastScroll = 0;
-    window.addEventListener('scroll', () => {
-        const navbar = document.querySelector('.navbar');
-        const currentScroll = window.pageYOffset;
-        
-        if (currentScroll > 100) {
-            navbar.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-        } else {
-            navbar.style.boxShadow = 'none';
-        }
-        
-        lastScroll = currentScroll;
-    });
-
-    // 语言切换
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
-
-    // 数字动画
-    function animateNumber(element, target, duration = 2000) {
-        let start = 0;
-        const increment = target / (duration / 16);
-        
-        function update() {
-            start += increment;
-            if (start < target) {
-                element.textContent = Math.floor(start) + '+';
-                requestAnimationFrame(update);
-            } else {
-                element.textContent = target + '+';
-            }
-        }
-        
-        update();
+// 切换学习状态
+function toggleLearned(word, btn) {
+    const learnedWords = JSON.parse(localStorage.getItem('laoliu_learned_words') || '[]');
+    
+    if (learnedWords.includes(word)) {
+        // 取消学习
+        const index = learnedWords.indexOf(word);
+        learnedWords.splice(index, 1);
+        btn.classList.remove('learned');
+        btn.textContent = '学习';
+    } else {
+        // 标记已学
+        learnedWords.push(word);
+        btn.classList.add('learned');
+        btn.textContent = '已学';
     }
-
-    // 当元素进入视口时触发动画
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const statNumbers = entry.target.querySelectorAll('.stat-number');
-                statNumbers.forEach(stat => {
-                    const target = parseInt(stat.textContent);
-                    animateNumber(stat, target);
-                });
-                observer.unobserve(entry.target);
-            }
-        });
-    });
-
-    const heroStats = document.querySelector('.hero-stats');
-    if (heroStats) {
-        observer.observe(heroStats);
-    }
-});
+    
+    localStorage.setItem('laoliu_learned_words', JSON.stringify(learnedWords));
+    
+    // 更新进度
+    document.getElementById('learnedCount').textContent = learnedWords.length;
+    const totalWords = 10; // 当前展示的单词总数
+    document.getElementById('progressPercent').textContent = Math.round(learnedWords.length / totalWords * 100) + '%';
+}
