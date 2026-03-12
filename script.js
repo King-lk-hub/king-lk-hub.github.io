@@ -358,13 +358,21 @@ function renderNewsList() {
         newsList.innerHTML = filteredNews.map((item, index) => `
             <div class="news-card ${item.category}" onclick="openNewsModal(${item.id})">
                 <span class="news-rank ${index < 3 ? 'top3' : ''}">${index + 1}</span>
-                <div class="news-meta">
-                    <span class="news-category">${getCategoryEmoji(item.category)} ${item.categoryName}</span>
-                    <span class="news-time">${item.time}</span>
+                ${item.image ? `
+                    <div class="news-image-wrapper">
+                        <img src="${item.image}" alt="${escapeHtml(item.title)}" class="news-image" loading="lazy">
+                        <div class="news-image-overlay"></div>
+                    </div>
+                ` : ''}
+                <div class="news-content-wrapper">
+                    <div class="news-meta">
+                        <span class="news-category">${getCategoryEmoji(item.category)} ${item.categoryName}</span>
+                        <span class="news-time">${item.time}</span>
+                    </div>
+                    <h3 class="news-title">${escapeHtml(item.title)}</h3>
+                    <p class="news-summary">${escapeHtml(item.summary)}</p>
+                    <p class="news-source">来源：${escapeHtml(item.source)}</p>
                 </div>
-                <h3 class="news-title">${escapeHtml(item.title)}</h3>
-                <p class="news-summary">${escapeHtml(item.summary)}</p>
-                <p class="news-source">来源：${escapeHtml(item.source)}</p>
             </div>
         `).join('');
     } else {
@@ -406,11 +414,26 @@ function openNewsModal(id) {
     
     // 详情内容（如果有详细内容则显示，否则显示摘要）
     const modalBody = document.getElementById('modalBody');
-    if (newsItem.content) {
-        modalBody.innerHTML = newsItem.content;
-    } else {
-        modalBody.innerHTML = `<p>${newsItem.summary}</p>`;
+    let contentHtml = '';
+    
+    // 如果有图片，显示图片
+    if (newsItem.image) {
+        contentHtml += `
+            <div class="news-modal-image-wrapper">
+                <img src="${newsItem.image}" alt="${escapeHtml(newsItem.title)}" class="news-modal-image">
+                <div class="image-caption">📰 新闻配图</div>
+            </div>
+        `;
     }
+    
+    // 添加正文内容
+    if (newsItem.content) {
+        contentHtml += newsItem.content;
+    } else {
+        contentHtml += `<p>${newsItem.summary}</p>`;
+    }
+    
+    modalBody.innerHTML = contentHtml;
     
     // 原文链接
     const modalLink = document.getElementById('modalLink');
