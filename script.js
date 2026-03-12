@@ -23,8 +23,10 @@ function initDate() {
     const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
     const dateStr = now.toLocaleDateString('zh-CN', options);
     
-    document.getElementById('currentDate').textContent = dateStr;
-    document.getElementById('diaryDate').textContent = dateStr;
+    const currentDateEl = document.getElementById('currentDate');
+    if (currentDateEl) {
+        currentDateEl.textContent = dateStr;
+    }
 }
 
 // ===== Tab切换功能 =====
