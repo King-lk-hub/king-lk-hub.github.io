@@ -32,50 +32,46 @@
         <!-- 日记Tab -->
         <section class="tab-content active" id="diary">
             <div class="diary-container">
-                <!-- 写日记区域 -->
-                <div class="write-diary">
-                    <div class="diary-header">
-                        <h2>📝 写日记</h2>
-                        <div class="diary-meta">
-                            <span class="diary-date" id="diaryDate"></span>
-                            <span class="diary-weather">
-                                <select id="weatherSelect">
-                                    <option value="☀️">☀️ 晴</option>
-                                    <option value="☁️">☁️ 多云</option>
-                                    <option value="🌧️">🌧️ 雨</option>
-                                    <option value="❄️">❄️ 雪</option>
-                                    <option value="🌈">🌈 彩虹</option>
-                                </select>
-                            </span>
-                            <span class="diary-mood">
-                                <select id="moodSelect">
-                                    <option value="😊">😊 开心</option>
-                                    <option value="😌">😌 平静</option>
-                                    <option value="😢">😢 难过</option>
-                                    <option value="😤">😤 生气</option>
-                                    <option value="🥱">🥱 疲惫</option>
-                                    <option value="🤔">🤔 思考</option>
-                                </select>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="diary-input">
-                        <input type="text" id="diaryTitle" placeholder="给今天起个标题..." class="diary-title-input">
-                        <textarea id="diaryContent" placeholder="今天发生了什么有趣的事？记录下来吧..." class="diary-textarea"></textarea>
-                    </div>
-                    <div class="diary-actions">
-                        <button class="btn-save" id="saveDiary">💾 保存日记</button>
+                <!-- 日记页面头部 -->
+                <div class="diary-page-header">
+                    <div class="diary-title-section">
+                        <h1>🦞 老六养成日记</h1>
+                        <p class="diary-subtitle">按最新日期排序，持续更新中。从查不了通讯录到8人AI团队的真实记录。</p>
+                        <span class="update-badge">● 持续更新中</span>
                     </div>
                 </div>
 
-                <!-- 日记列表 -->
-                <div class="diary-list">
-                    <h3>📚 历史日记</h3>
-                    <div class="diary-entries" id="diaryEntries">
-                        <!-- 日记条目将通过JS动态生成 -->
-                        <div class="empty-state">
-                            <span class="empty-icon">📝</span>
-                            <p>还没有日记，开始记录你的第一天吧！</p>
+                <!-- 日记卡片网格 -->
+                <div class="diary-grid" id="diaryGrid">
+                    <!-- 日记卡片将通过JS动态生成 -->
+                </div>
+                
+                <!-- 空状态 -->
+                <div class="diary-empty" id="diaryEmpty" style="display: none;">
+                    <span class="empty-icon">📝</span>
+                    <p>还没有日记，老六正在努力学习中...</p>
+                </div>
+            </div>
+            
+            <!-- 日记详情弹窗 -->
+            <div class="diary-modal" id="diaryModal">
+                <div class="diary-modal-content">
+                    <div class="diary-modal-header">
+                        <span class="diary-day-tag" id="modalDayTag">Day 1</span>
+                        <button class="diary-modal-close" onclick="closeDiaryModal()">✕</button>
+                    </div>
+                    <div class="diary-modal-image-wrapper" id="modalImageWrapper">
+                        <img src="" alt="日记配图" class="diary-modal-image" id="modalDiaryImage">
+                    </div>
+                    <div class="diary-modal-body">
+                        <h3 id="modalDiaryTitle">日记标题</h3>
+                        <div class="diary-modal-meta">
+                            <span id="modalDiaryDate">2024年1月1日</span>
+                            <span id="modalDiaryWeather">☀️</span>
+                            <span id="modalDiaryMood">😊</span>
+                        </div>
+                        <div class="diary-modal-text" id="modalDiaryContent">
+                            <!-- 日记内容 -->
                         </div>
                     </div>
                 </div>

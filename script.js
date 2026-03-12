@@ -51,105 +51,164 @@ function initTabs() {
     });
 }
 
-// ===== 日记功能 =====
+// ===== 日记功能 - 卡片式布局 =====
+let allDiaries = []; // 存储所有日记数据
+
 function initDiary() {
-    const saveBtn = document.getElementById('saveDiary');
-    const titleInput = document.getElementById('diaryTitle');
-    const contentInput = document.getElementById('diaryContent');
-    const weatherSelect = document.getElementById('weatherSelect');
-    const moodSelect = document.getElementById('moodSelect');
-    
-    // 加载已保存的日记
+    // 加载日记数据（从JSON文件和localStorage合并）
     loadDiaries();
-    
-    // 保存日记
-    saveBtn.addEventListener('click', () => {
-        const title = titleInput.value.trim();
-        const content = contentInput.value.trim();
-        const weather = weatherSelect.value;
-        const mood = moodSelect.value;
-        
-        if (!content) {
-            alert('请输入日记内容！');
-            return;
-        }
-        
-        const diary = {
-            id: Date.now(),
-            title: title || '无标题',
-            content: content,
-            weather: weather,
-            mood: mood,
-            date: new Date().toISOString(),
-            dateStr: document.getElementById('diaryDate').textContent
-        };
-        
-        // 保存到localStorage
-        const diaries = JSON.parse(localStorage.getItem('laoliu_diaries') || '[]');
-        diaries.unshift(diary);
-        localStorage.setItem('laoliu_diaries', JSON.stringify(diaries));
-        
-        // 清空输入
-        titleInput.value = '';
-        contentInput.value = '';
-        
-        // 刷新列表
-        loadDiaries();
-        
-        // 提示成功
-        alert('日记保存成功！');
-    });
 }
 
 // 加载日记列表
-function loadDiaries() {
-    const entriesContainer = document.getElementById('diaryEntries');
-    const diaries = JSON.parse(localStorage.getItem('laoliu_diaries') || '[]');
+async function loadDiaries() {
+    const gridContainer = document.getElementById('diaryGrid');
+    const emptyState = document.getElementById('diaryEmpty');
     
-    if (diaries.length === 0) {
-        entriesContainer.innerHTML = `
-            <div class="empty-state">
-                <span class="empty-icon">📝</span>
-                <p>还没有日记，开始记录你的第一天吧！</p>
-            </div>
-        `;
+    try {
+        // 尝试从JSON文件加载自动生成的日记
+        const response = await fetch('diary-data.json?t=' + Date.now());
+        const data = await response.json();
+        
+        // 合并自动生成的日记和本地存储的日记
+        const autoDiaries = data.diaries || [];
+        const localDiaries = JSON.parse(localStorage.getItem('laoliu_diaries') || '[]');
+        
+        // 合并并去重（根据id）
+        const diaryMap = new Map();
+        [...autoDiaries, ...localDiaries].forEach(diary => {
+            diaryMap.set(diary.id, diary);
+        });
+        
+        allDiaries = Array.from(diaryMap.values());
+        // 按日期降序排序
+        allDiaries.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+    } catch (error) {
+        // 如果JSON文件不存在，只使用localStorage的数据
+        allDiaries = JSON.parse(localStorage.getItem('laoliu_diaries') || '[]');
+    }
+    
+    if (allDiaries.length === 0) {
+        gridContainer.style.display = 'none';
+        emptyState.style.display = 'block';
         return;
     }
     
-    entriesContainer.innerHTML = diaries.map(diary => `
-        <div class="diary-entry" data-id="${diary.id}">
-            <div class="entry-header">
-                <span class="entry-date">${diary.dateStr} ${diary.weather}</span>
-                <span class="entry-mood">${diary.mood}</span>
+    gridContainer.style.display = 'grid';
+    emptyState.style.display = 'none';
+    
+    // 渲染日记卡片
+    gridContainer.innerHTML = allDiaries.map((diary, index) => {
+        const dayNumber = allDiaries.length - index; // Day编号（从最早开始算）
+        const shortTitle = diary.title.length > 30 ? diary.title.substring(0, 30) + '...' : diary.title;
+        
+        // 生成随机配图（根据日记内容生成不同的图片）
+        const imageUrl = generateDiaryImage(diary, index);
+        
+        return `
+            <div class="diary-card" onclick="openDiaryModal(${diary.id})">
+                <img src="${imageUrl}" alt="日记配图" class="diary-card-image" loading="lazy">
+                <span class="diary-day-tag">Day ${dayNumber}</span>
+                <div class="diary-card-content">
+                    <p class="diary-card-title">${escapeHtml(shortTitle)}</p>
+                </div>
             </div>
-            <h4 class="entry-title">${escapeHtml(diary.title)}</h4>
-            <p class="entry-content">${escapeHtml(diary.content)}</p>
-            <div class="entry-actions">
-                <button class="btn-entry view" onclick="viewDiary(${diary.id})">查看</button>
-                <button class="btn-entry delete" onclick="deleteDiary(${diary.id})">删除</button>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
-// 查看日记详情
-function viewDiary(id) {
-    const diaries = JSON.parse(localStorage.getItem('laoliu_diaries') || '[]');
-    const diary = diaries.find(d => d.id === id);
-    if (diary) {
-        alert(`${diary.dateStr} ${diary.weather} ${diary.mood}\n\n【${diary.title}】\n\n${diary.content}`);
+// 生成日记配图（根据日记主题生成不同的图片）
+function generateDiaryImage(diary, index) {
+    // 根据日记标题或内容关键词选择不同的主题图片
+    const title = diary.title.toLowerCase();
+    const content = (diary.content || '').toLowerCase();
+    
+    // 主题关键词映射
+    const themes = [
+        { keywords: ['ai', '人工智能', '模型', '学习'], seed: 'ai-learning' },
+        { keywords: ['web', '前端', '网页', '开发'], seed: 'web-development' },
+        { keywords: ['数据', '分析', 'python'], seed: 'data-analysis' },
+        { keywords: ['git', 'github', '代码'], seed: 'coding' },
+        { keywords: ['设计', 'ui', '样式'], seed: 'design' },
+        { keywords: ['项目', '管理', '规划'], seed: 'project-management' }
+    ];
+    
+    // 查找匹配的主题
+    let matchedTheme = null;
+    for (const theme of themes) {
+        if (theme.keywords.some(kw => title.includes(kw) || content.includes(kw))) {
+            matchedTheme = theme;
+            break;
+        }
     }
+    
+    // 如果没有匹配，根据索引循环使用主题
+    if (!matchedTheme) {
+        matchedTheme = themes[index % themes.length];
+    }
+    
+    // 使用Pollinations AI生成图片
+    const prompts = {
+        'ai-learning': 'cute cartoon AI robot studying with books, warm lighting, cozy workspace, digital art style, soft colors',
+        'web-development': 'cute cartoon character coding on computer, modern workspace, colorful screen, digital illustration',
+        'data-analysis': 'cute cartoon character analyzing charts and graphs, data visualization, modern office, bright colors',
+        'coding': 'cute cartoon programmer with laptop, code on screen, coffee cup, cozy atmosphere, illustration style',
+        'design': 'cute cartoon designer drawing on tablet, creative workspace, color palettes, artistic style',
+        'project-management': 'cute cartoon character organizing tasks on whiteboard, planning, teamwork, bright cheerful style'
+    };
+    
+    const prompt = prompts[matchedTheme.seed] || prompts['ai-learning'];
+    return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=400&height=250&nologo=true&seed=${diary.id}`;
 }
 
-// 删除日记
-function deleteDiary(id) {
-    if (confirm('确定要删除这篇日记吗？')) {
-        const diaries = JSON.parse(localStorage.getItem('laoliu_diaries') || '[]');
-        const newDiaries = diaries.filter(d => d.id !== id);
-        localStorage.setItem('laoliu_diaries', JSON.stringify(newDiaries));
-        loadDiaries();
-    }
+// 打开日记详情弹窗
+function openDiaryModal(id) {
+    const diary = allDiaries.find(d => d.id === id);
+    if (!diary) return;
+    
+    // 计算Day编号
+    const index = allDiaries.findIndex(d => d.id === id);
+    const dayNumber = allDiaries.length - index;
+    
+    // 填充弹窗内容
+    document.getElementById('modalDayTag').textContent = `Day ${dayNumber}`;
+    document.getElementById('modalDiaryTitle').textContent = diary.title;
+    document.getElementById('modalDiaryDate').textContent = diary.dateStr || new Date(diary.date).toLocaleDateString('zh-CN');
+    document.getElementById('modalDiaryWeather').textContent = diary.weather || '☀️';
+    document.getElementById('modalDiaryMood').textContent = diary.mood || '😊';
+    document.getElementById('modalDiaryContent').textContent = diary.content;
+    
+    // 设置图片
+    const imageWrapper = document.getElementById('modalImageWrapper');
+    const image = document.getElementById('modalDiaryImage');
+    const imageUrl = generateDiaryImage(diary, index);
+    image.src = imageUrl;
+    
+    // 显示弹窗
+    document.getElementById('diaryModal').classList.add('show');
+    document.body.style.overflow = 'hidden';
 }
+
+// 关闭日记详情弹窗
+function closeDiaryModal() {
+    document.getElementById('diaryModal').classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+// 点击弹窗外部关闭
+document.addEventListener('click', (e) => {
+    const modal = document.getElementById('diaryModal');
+    if (e.target === modal) {
+        closeDiaryModal();
+    }
+});
+
+// ESC键关闭弹窗
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeDiaryModal();
+    }
+});
 
 // HTML转义
 function escapeHtml(text) {
