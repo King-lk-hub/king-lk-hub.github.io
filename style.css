@@ -840,6 +840,12 @@ body {
     color: var(--text-secondary);
 }
 
+/* AI分类标签 */
+.news-card.ai .news-category {
+    background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+    color: #7b1fa2;
+}
+
 /* 军事分类标签 */
 .news-card.military .news-category {
     background: linear-gradient(135deg, #ffebee, #ffcdd2);
@@ -951,6 +957,14 @@ body {
     border-color: #3498db;
 }
 
+/* AI按钮 */
+.category-btn[data-category="ai"]:hover,
+.category-btn[data-category="ai"].active {
+    background: #9b59b6;
+    color: white;
+    border-color: #9b59b6;
+}
+
 /* 生活按钮 */
 .category-btn[data-category="life"]:hover,
 .category-btn[data-category="life"].active {
@@ -997,6 +1011,23 @@ body {
 .news-rank.top3 {
     background: linear-gradient(135deg, #ffd700, #ff8c00);
     box-shadow: 0 2px 12px rgba(255, 215, 0, 0.4);
+}
+
+/* AI分类样式 */
+.news-card.ai {
+    border-left-color: #9b59b6;
+}
+
+.news-card.ai:hover {
+    border-left-color: #a569bd;
+}
+
+.news-card.ai .news-rank {
+    background: linear-gradient(135deg, #9b59b6, #a569bd);
+}
+
+.news-card.ai .news-rank.top3 {
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
 }
 
 /* 军事分类样式 */

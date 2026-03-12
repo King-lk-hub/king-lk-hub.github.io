@@ -388,6 +388,7 @@ function renderNewsList() {
 // 获取分类emoji
 function getCategoryEmoji(category) {
     const emojiMap = {
+        'ai': '🤖',
         'military': '🎖️',
         'tech': '💻',
         'life': '🏠',
