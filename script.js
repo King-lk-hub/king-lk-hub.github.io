@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 初始化英语学习
     initEnglish();
+    
+    // 初始化每日快讯
+    initNews();
 });
 
 // ===== 日期初始化 =====
@@ -275,4 +278,59 @@ function toggleLearned(word, btn) {
     document.getElementById('learnedCount').textContent = learnedWords.length;
     const totalWords = 10; // 当前展示的单词总数
     document.getElementById('progressPercent').textContent = Math.round(learnedWords.length / totalWords * 100) + '%';
+}
+
+// ===== 每日快讯功能 =====
+function initNews() {
+    loadNews();
+}
+
+// 加载新闻
+async function loadNews() {
+    const newsList = document.getElementById('newsList');
+    const updateTimeEl = document.getElementById('newsUpdateTime');
+    
+    try {
+        // 加载新闻数据
+        const response = await fetch('news-data.json?t=' + Date.now());
+        const data = await response.json();
+        
+        // 更新时间显示
+        updateTimeEl.textContent = `更新时间：${data.date} ${data.updateTime.split(' ')[1]}`;
+        
+        // 渲染新闻列表
+        if (data.news && data.news.length > 0) {
+            newsList.innerHTML = data.news.map(item => `
+                <div class="news-card ${item.category}" onclick="openNews(${item.id})">
+                    <div class="news-meta">
+                        <span class="news-category">${item.categoryName}</span>
+                        <span class="news-time">${item.time}</span>
+                    </div>
+                    <h3 class="news-title">${escapeHtml(item.title)}</h3>
+                    <p class="news-summary">${escapeHtml(item.summary)}</p>
+                    <p class="news-source">来源：${escapeHtml(item.source)}</p>
+                </div>
+            `).join('');
+        } else {
+            newsList.innerHTML = `
+                <div class="news-empty">
+                    <div class="news-empty-icon">📰</div>
+                    <p>暂无新闻，请稍后再来</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('加载新闻失败:', error);
+        newsList.innerHTML = `
+            <div class="news-empty">
+                <div class="news-empty-icon">⚠️</div>
+                <p>新闻加载失败，请刷新重试</p>
+            </div>
+        `;
+    }
+}
+
+// 打开新闻详情（示例）
+function openNews(id) {
+    alert('新闻详情功能开发中...\n新闻ID: ' + id);
 }

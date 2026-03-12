@@ -1,0 +1,51 @@
+{
+    "updateTime": "2026-03-12 07:00:00",
+    "date": "2026年3月12日",
+    "news": [
+        {
+            "id": 1,
+            "category": "tech",
+            "categoryName": "科技",
+            "title": "AI技术新突破：智能助手能力再升级",
+            "summary": "最新一代AI智能助手正式发布，具备更强的自然语言理解能力和多模态交互功能，将为用户带来更智能的体验。",
+            "time": "07:00",
+            "source": "科技日报"
+        },
+        {
+            "id": 2,
+            "category": "finance",
+            "categoryName": "财经",
+            "title": "A股市场早报：三大指数集体高开",
+            "summary": "今日A股市场开盘表现积极，科技板块领涨，市场情绪回暖，投资者关注度持续提升。",
+            "time": "07:15",
+            "source": "财经早报"
+        },
+        {
+            "id": 3,
+            "category": "world",
+            "categoryName": "国际",
+            "title": "全球气候变化峰会即将召开",
+            "summary": "各国领导人将齐聚峰会，共同讨论气候应对策略，推动全球绿色可持续发展。",
+            "time": "07:30",
+            "source": "环球时报"
+        },
+        {
+            "id": 4,
+            "category": "sports",
+            "categoryName": "体育",
+            "title": "国足世预赛备战进入冲刺阶段",
+            "summary": "国家队正在紧锣密鼓地进行训练，教练组制定了详细的战术方案，全力备战关键比赛。",
+            "time": "07:45",
+            "source": "体育快报"
+        },
+        {
+            "id": 5,
+            "category": "entertainment",
+            "categoryName": "娱乐",
+            "title": "热门电影票房破纪录",
+            "summary": "国产大片持续火爆，票房成绩亮眼，观众口碑良好，展现中国电影市场强劲复苏势头。",
+            "time": "08:00",
+            "source": "娱乐周刊"
+        }
+    ]
+}

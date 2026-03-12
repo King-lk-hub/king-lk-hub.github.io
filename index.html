@@ -18,6 +18,7 @@
         </div>
         <div class="nav-tabs">
             <button class="tab-btn active" data-tab="diary">📔 日记</button>
+            <button class="tab-btn" data-tab="news">📰 快讯</button>
             <button class="tab-btn" data-tab="english">📖 英语</button>
             <button class="tab-btn" data-tab="about">🎯 关于</button>
         </div>
@@ -167,6 +168,10 @@
                             <span class="feature-text">智能日记记录</span>
                         </div>
                         <div class="feature-item">
+                            <span class="feature-icon">📰</span>
+                            <span class="feature-text">每日新闻快讯</span>
+                        </div>
+                        <div class="feature-item">
                             <span class="feature-icon">📖</span>
                             <span class="feature-text">专升本英语学习</span>
                         </div>
@@ -174,14 +179,28 @@
                             <span class="feature-icon">🤖</span>
                             <span class="feature-text">AI智能助手</span>
                         </div>
-                        <div class="feature-item">
-                            <span class="feature-icon">📊</span>
-                            <span class="feature-text">学习进度追踪</span>
-                        </div>
                     </div>
                 </div>
                 <div class="about-info">
                     <p>© 2024 老六日记 · WorkBuddy AI Assistant</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 每日快讯Tab -->
+        <section class="tab-content" id="news">
+            <div class="news-container">
+                <div class="news-header">
+                    <h2>📰 每日快讯</h2>
+                    <p class="news-update-time" id="newsUpdateTime">更新时间：--</p>
+                </div>
+                
+                <div class="news-list" id="newsList">
+                    <!-- 新闻列表将通过JS动态加载 -->
+                    <div class="news-loading">
+                        <span class="loading-icon">⏳</span>
+                        <p>正在加载新闻...</p>
+                    </div>
                 </div>
             </div>
         </section>
