@@ -845,3 +845,221 @@ body {
     margin-bottom: 16px;
 }
 
+/* 分类筛选 */
+.news-categories {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.category-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-secondary);
+    transition: all 0.3s;
+}
+
+.category-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.category-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* 新闻统计 */
+.news-stats {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    padding: 8px 12px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+/* 新闻卡片排名 */
+.news-card {
+    position: relative;
+}
+
+.news-rank {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color), #ff6b6b);
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 50%;
+}
+
+.news-rank.top3 {
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+}
+
+/* 军事分类样式 */
+.news-card.military {
+    border-left-color: #c0392b;
+}
+
+.news-card.life {
+    border-left-color: #16a085;
+}
+
+/* 新闻详情弹窗 */
+.news-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.news-modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    border-radius: 16px;
+    max-width: 700px;
+    width: 100%;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 24px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+    font-size: 22px;
+    color: var(--text-primary);
+    line-height: 1.4;
+    margin: 0;
+    padding-right: 40px;
+}
+
+.modal-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: #f0f0f0;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--text-secondary);
+    transition: all 0.3s;
+}
+
+.modal-close:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.modal-meta {
+    display: flex;
+    gap: 12px;
+    padding: 16px 24px;
+    background: #f9f9f9;
+    flex-wrap: wrap;
+}
+
+.modal-category {
+    padding: 4px 12px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.modal-time, .modal-source {
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+}
+
+.modal-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+    line-height: 1.8;
+    color: var(--text-primary);
+    font-size: 15px;
+}
+
+.modal-body p {
+    margin-bottom: 16px;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-color);
+    text-align: right;
+}
+
+.btn-read-original {
+    display: inline-block;
+    padding: 10px 24px;
+    background: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.btn-read-original:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .news-categories {
+        justify-content: center;
+    }
+    
+    .modal-content {
+        max-height: 90vh;
+    }
+    
+    .modal-header h3 {
+        font-size: 18px;
+    }
+    
+    .modal-meta {
+        flex-direction: column;
+        gap: 8px;
+    }
+}

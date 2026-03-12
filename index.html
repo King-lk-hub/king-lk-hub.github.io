@@ -191,8 +191,21 @@
         <section class="tab-content" id="news">
             <div class="news-container">
                 <div class="news-header">
-                    <h2>📰 每日快讯</h2>
+                    <h2>📰 每日快讯 TOP 15</h2>
                     <p class="news-update-time" id="newsUpdateTime">更新时间：--</p>
+                </div>
+                
+                <!-- 分类筛选 -->
+                <div class="news-categories">
+                    <button class="category-btn active" data-category="all">全部</button>
+                    <button class="category-btn" data-category="military">🎖️ 军事</button>
+                    <button class="category-btn" data-category="tech">💻 科技</button>
+                    <button class="category-btn" data-category="life">🏠 生活</button>
+                </div>
+                
+                <!-- 新闻统计 -->
+                <div class="news-stats">
+                    <span id="newsCount">共 0 条新闻</span>
                 </div>
                 
                 <div class="news-list" id="newsList">
@@ -204,6 +217,27 @@
                 </div>
             </div>
         </section>
+        
+        <!-- 新闻详情弹窗 -->
+        <div class="news-modal" id="newsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">新闻标题</h3>
+                    <button class="modal-close" onclick="closeNewsModal()">✕</button>
+                </div>
+                <div class="modal-meta">
+                    <span class="modal-category" id="modalCategory">分类</span>
+                    <span class="modal-time" id="modalTime">时间</span>
+                    <span class="modal-source" id="modalSource">来源</span>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- 新闻详情内容 -->
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="modalLink" target="_blank" class="btn-read-original">查看原文</a>
+                </div>
+            </div>
+        </div>
     </main>
 
     <script src="script.js"></script>

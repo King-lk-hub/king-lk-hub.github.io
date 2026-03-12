@@ -281,8 +281,28 @@ function toggleLearned(word, btn) {
 }
 
 // ===== 每日快讯功能 =====
+let allNewsData = null; // 存储所有新闻数据
+let currentCategory = 'all'; // 当前选中的分类
+
 function initNews() {
     loadNews();
+    initCategoryButtons();
+}
+
+// 初始化分类按钮
+function initCategoryButtons() {
+    const buttons = document.querySelectorAll('.category-btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // 更新按钮状态
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // 筛选新闻
+            currentCategory = btn.dataset.category;
+            renderNewsList();
+        });
+    });
 }
 
 // 加载新闻
@@ -295,30 +315,15 @@ async function loadNews() {
         const response = await fetch('news-data.json?t=' + Date.now());
         const data = await response.json();
         
+        // 存储数据
+        allNewsData = data;
+        
         // 更新时间显示
         updateTimeEl.textContent = `更新时间：${data.date} ${data.updateTime.split(' ')[1]}`;
         
         // 渲染新闻列表
-        if (data.news && data.news.length > 0) {
-            newsList.innerHTML = data.news.map(item => `
-                <div class="news-card ${item.category}" onclick="openNews(${item.id})">
-                    <div class="news-meta">
-                        <span class="news-category">${item.categoryName}</span>
-                        <span class="news-time">${item.time}</span>
-                    </div>
-                    <h3 class="news-title">${escapeHtml(item.title)}</h3>
-                    <p class="news-summary">${escapeHtml(item.summary)}</p>
-                    <p class="news-source">来源：${escapeHtml(item.source)}</p>
-                </div>
-            `).join('');
-        } else {
-            newsList.innerHTML = `
-                <div class="news-empty">
-                    <div class="news-empty-icon">📰</div>
-                    <p>暂无新闻，请稍后再来</p>
-                </div>
-            `;
-        }
+        renderNewsList();
+        
     } catch (error) {
         console.error('加载新闻失败:', error);
         newsList.innerHTML = `
@@ -330,7 +335,113 @@ async function loadNews() {
     }
 }
 
-// 打开新闻详情（示例）
-function openNews(id) {
-    alert('新闻详情功能开发中...\n新闻ID: ' + id);
+// 渲染新闻列表
+function renderNewsList() {
+    const newsList = document.getElementById('newsList');
+    const newsCountEl = document.getElementById('newsCount');
+    
+    if (!allNewsData || !allNewsData.news) {
+        return;
+    }
+    
+    // 筛选新闻
+    let filteredNews = allNewsData.news;
+    if (currentCategory !== 'all') {
+        filteredNews = allNewsData.news.filter(item => item.category === currentCategory);
+    }
+    
+    // 更新统计
+    newsCountEl.textContent = `共 ${filteredNews.length} 条新闻`;
+    
+    // 渲染列表
+    if (filteredNews.length > 0) {
+        newsList.innerHTML = filteredNews.map((item, index) => `
+            <div class="news-card ${item.category}" onclick="openNewsModal(${item.id})">
+                <span class="news-rank ${index < 3 ? 'top3' : ''}">${index + 1}</span>
+                <div class="news-meta">
+                    <span class="news-category">${getCategoryEmoji(item.category)} ${item.categoryName}</span>
+                    <span class="news-time">${item.time}</span>
+                </div>
+                <h3 class="news-title">${escapeHtml(item.title)}</h3>
+                <p class="news-summary">${escapeHtml(item.summary)}</p>
+                <p class="news-source">来源：${escapeHtml(item.source)}</p>
+            </div>
+        `).join('');
+    } else {
+        newsList.innerHTML = `
+            <div class="news-empty">
+                <div class="news-empty-icon">📰</div>
+                <p>该分类暂无新闻</p>
+            </div>
+        `;
+    }
 }
+
+// 获取分类emoji
+function getCategoryEmoji(category) {
+    const emojiMap = {
+        'military': '🎖️',
+        'tech': '💻',
+        'life': '🏠',
+        'finance': '💰',
+        'sports': '⚽',
+        'entertainment': '🎬',
+        'world': '🌍'
+    };
+    return emojiMap[category] || '📰';
+}
+
+// 打开新闻详情弹窗
+function openNewsModal(id) {
+    if (!allNewsData || !allNewsData.news) return;
+    
+    const newsItem = allNewsData.news.find(item => item.id === id);
+    if (!newsItem) return;
+    
+    // 填充弹窗内容
+    document.getElementById('modalTitle').textContent = newsItem.title;
+    document.getElementById('modalCategory').textContent = `${getCategoryEmoji(newsItem.category)} ${newsItem.categoryName}`;
+    document.getElementById('modalTime').textContent = newsItem.time;
+    document.getElementById('modalSource').textContent = `来源：${newsItem.source}`;
+    
+    // 详情内容（如果有详细内容则显示，否则显示摘要）
+    const modalBody = document.getElementById('modalBody');
+    if (newsItem.content) {
+        modalBody.innerHTML = newsItem.content;
+    } else {
+        modalBody.innerHTML = `<p>${newsItem.summary}</p>`;
+    }
+    
+    // 原文链接
+    const modalLink = document.getElementById('modalLink');
+    if (newsItem.url) {
+        modalLink.href = newsItem.url;
+        modalLink.style.display = 'inline-block';
+    } else {
+        modalLink.style.display = 'none';
+    }
+    
+    // 显示弹窗
+    document.getElementById('newsModal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+// 关闭新闻详情弹窗
+function closeNewsModal() {
+    document.getElementById('newsModal').classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+// 点击弹窗外部关闭
+document.addEventListener('click', (e) => {
+    if (e.target.id === 'newsModal') {
+        closeNewsModal();
+    }
+});
+
+// ESC键关闭弹窗
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeNewsModal();
+    }
+});
