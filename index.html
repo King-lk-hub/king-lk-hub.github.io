@@ -3,455 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2025年A股完整数据分析白板图</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
-            background: #f5f5f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .whiteboard {
-            width: 1100px;
-            background: linear-gradient(135deg, #fefefe 0%, #f8f8f8 100%);
-            border: 8px solid #333;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            position: relative;
-        }
-        
-        .whiteboard::before {
-            content: '';
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 8px;
-            background: #666;
-            border-radius: 4px;
-        }
-        
-        .subtitle {
-            text-align: center;
-            font-size: 20px;
-            color: #333;
-            margin-bottom: 25px;
-            font-weight: bold;
-            border-bottom: 3px solid #FF9800;
-            padding-bottom: 10px;
-        }
-        
-        .flow-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: stretch;
-            margin-bottom: 30px;
-            gap: 15px;
-        }
-        
-        .section {
-            flex: 1;
-            text-align: center;
-            position: relative;
-        }
-        
-        .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 15px;
-            background: #e3f2fd;
-            padding: 8px;
-            border-radius: 8px;
-            border: 2px solid #2196F3;
-        }
-        
-        /* Reading Section - 原始数据 */
-        .reading-box {
-            background: #fff;
-            border: 3px solid #333;
-            border-radius: 15px;
-            padding: 15px;
-            position: relative;
-            min-height: 320px;
-        }
-        
-        .data-table {
-            width: 100%;
-            font-size: 11px;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        
-        .data-table th {
-            background: #2196F3;
-            color: white;
-            padding: 6px 4px;
-            border: 1px solid #333;
-        }
-        
-        .data-table td {
-            padding: 5px 3px;
-            border: 1px solid #ccc;
-            text-align: center;
-        }
-        
-        .data-table tr:nth-child(even) {
-            background: #f5f5f5;
-        }
-        
-        .data-source {
-            font-size: 10px;
-            color: #666;
-            margin-top: 8px;
-            font-style: italic;
-        }
-        
-        /* Arrow */
-        .arrow-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-        
-        .arrow {
-            font-size: 35px;
-            color: #333;
-        }
-        
-        .arrow-text {
-            font-size: 12px;
-            color: #666;
-            background: #fff9c4;
-            padding: 3px 8px;
-            border-radius: 10px;
-            margin-top: 5px;
-            border: 1px solid #333;
-        }
-        
-        /* Processing Section - 分析过程 */
-        .processing-box {
-            background: #fff;
-            border: 3px solid #333;
-            border-radius: 15px;
-            padding: 15px;
-            position: relative;
-            min-height: 320px;
-        }
-        
-        .analysis-steps {
-            text-align: left;
-            font-size: 12px;
-            margin-top: 10px;
-        }
-        
-        .step {
-            background: #f3e5f5;
-            border-left: 4px solid #9c27b0;
-            padding: 8px;
-            margin-bottom: 8px;
-            border-radius: 0 8px 8px 0;
-        }
-        
-        .step-title {
-            font-weight: bold;
-            color: #7b1fa2;
-            margin-bottom: 3px;
-        }
-        
-        .chart-container {
-            margin-top: 15px;
-            padding: 10px;
-            background: #fafafa;
-            border-radius: 8px;
-            border: 2px dashed #ccc;
-        }
-        
-        .mini-chart {
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-end;
-            height: 80px;
-            padding: 5px;
-        }
-        
-        .month-bar {
-            width: 18px;
-            background: linear-gradient(to top, #4CAF50, #81C784);
-            border-radius: 3px 3px 0 0;
-            border: 1px solid #333;
-            position: relative;
-            transition: all 0.3s;
-        }
-        
-        .month-bar:hover {
-            background: linear-gradient(to top, #2E7D32, #4CAF50);
-        }
-        
-        .month-label {
-            position: absolute;
-            bottom: -18px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 9px;
-            white-space: nowrap;
-        }
-        
-        /* Result Section - 最终结果 */
-        .result-box {
-            background: #fff;
-            border: 3px solid #333;
-            border-radius: 15px;
-            padding: 15px;
-            min-height: 320px;
-        }
-        
-        .result-highlight {
-            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-            border: 3px solid #4CAF50;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 12px;
-        }
-        
-        .result-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #2e7d32;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        
-        .index-result {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            padding: 8px;
-            background: white;
-            border-radius: 6px;
-            border: 1px solid #81c784;
-        }
-        
-        .index-name {
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .index-value {
-            color: #d32f2f;
-            font-weight: bold;
-        }
-        
-        .key-insights {
-            text-align: left;
-            font-size: 11px;
-            margin-top: 10px;
-        }
-        
-        .insight-item {
-            background: #fff3e0;
-            border-left: 4px solid #FF9800;
-            padding: 6px 8px;
-            margin-bottom: 6px;
-            border-radius: 0 6px 6px 0;
-        }
-        
-        .checkmark {
-            color: #4CAF50;
-            font-weight: bold;
-        }
-        
-        /* Quote Section */
-        .quote-box {
-            background: #fff3e0;
-            border: 3px solid #FF9800;
-            border-radius: 20px;
-            padding: 20px 30px;
-            text-align: center;
-            margin-top: 20px;
-            position: relative;
-        }
-        
-        .quote-box::before {
-            content: '"';
-            font-size: 50px;
-            color: #FF9800;
-            position: absolute;
-            top: -5px;
-            left: 20px;
-            line-height: 1;
-        }
-        
-        .quote-text {
-            font-size: 16px;
-            color: #E65100;
-            font-weight: bold;
-            line-height: 1.6;
-        }
-        
-        .highlight {
-            background: #ffeb3b;
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
-    </style>
+    <title>老六英语 - 专升本词汇学习</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="whiteboard">
-        <div class="subtitle">📊 2025年A股数据分析流程：原始数据 → 走势分析 → 投资洞察</div>
-        
-        <div class="flow-container">
-            <!-- Reading Section - 原始数据 -->
-            <div class="section">
-                <div class="section-title">📖 原始数据 (Raw Data)</div>
-                <div class="reading-box">
-                    <table class="data-table">
-                        <tr>
-                            <th>月份</th>
-                            <th>上证指数</th>
-                            <th>深证成指</th>
-                            <th>创业板指</th>
-                        </tr>
-                        <tr><td>1月</td><td>3,350</td><td>10,850</td><td>2,150</td></tr>
-                        <tr><td>2月</td><td>3,270</td><td>10,394</td><td>2,121</td></tr>
-                        <tr><td>3月</td><td>3,180</td><td>10,200</td><td>2,080</td></tr>
-                        <tr><td>4月</td><td>3,145</td><td>10,150</td><td>2,050</td></tr>
-                        <tr><td>5月</td><td>3,280</td><td>10,500</td><td>2,180</td></tr>
-                        <tr><td>6月</td><td>3,420</td><td>10,950</td><td>2,350</td></tr>
-                        <tr><td>7月</td><td>3,580</td><td>11,400</td><td>2,520</td></tr>
-                        <tr><td>8月</td><td>3,720</td><td>11,850</td><td>2,680</td></tr>
-                        <tr><td>9月</td><td>3,850</td><td>12,300</td><td>2,850</td></tr>
-                        <tr><td>10月</td><td>4,020</td><td>12,850</td><td>3,050</td></tr>
-                        <tr><td>11月</td><td>3,950</td><td>13,100</td><td>3,150</td></tr>
-                        <tr><td>12月</td><td>3,969</td><td>13,525</td><td>3,203</td></tr>
-                    </table>
-                    <div class="data-source">
-                        📈 数据来源: Wind/交易所官方数据<br>
-                        💰 全年成交额: 400+万亿元
-                    </div>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="logo">
+                <span class="logo-icon">📚</span>
+                <span class="logo-text">老六英语</span>
+            </div>
+            <div class="lang-switch">
+                <button class="lang-btn active">EN</button>
+                <button class="lang-btn">JA</button>
+                <button class="lang-btn">DE</button>
+            </div>
+        </div>
+        <div class="nav-right">
+            <a href="#home" class="nav-link active">首页</a>
+            <a href="#vocabulary" class="nav-link">📖 词汇</a>
+            <a href="#practice" class="nav-link">✏️ 练习</a>
+            <a href="#progress" class="nav-link">📊 进度</a>
+            <a href="#about" class="nav-link">🎯 关于</a>
+        </div>
+    </nav>
+
+    <!-- 主标题区域 -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="title-main">每天50词</span>
+                <span class="title-sub">专升本英语轻松过</span>
+            </h1>
+            <p class="hero-desc">
+                <span class="highlight">老六英语</span> = AI智能学习助手，给你科学方法，它就是你的专属单词教练
+            </p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">3800+</span>
+                    <span class="stat-label">专升本高频词汇</span>
                 </div>
-            </div>
-            
-            <!-- Arrow -->
-            <div class="arrow-container">
-                <div class="arrow">➜</div>
-                <div class="arrow-text">分析</div>
-            </div>
-            
-            <!-- Processing Section - 分析过程 -->
-            <div class="section">
-                <div class="section-title">🔍 走势分析 (Analysis)</div>
-                <div class="processing-box">
-                    <div class="analysis-steps">
-                        <div class="step">
-                            <div class="step-title">1️⃣ 趋势识别</div>
-                            <div>• Q1: 震荡筑底 (3050-3350)</div>
-                            <div>• Q2: 突破3500点压力位</div>
-                            <div>• Q3: 突破3731历史高点</div>
-                            <div>• Q4: 突破4000点,创10年新高</div>
-                        </div>
-                        <div class="step">
-                            <div class="step-title">2️⃣ 关键节点</div>
-                            <div>• 最低点: 3,050点 (3月)</div>
-                            <div>• 最高点: 4,200点 (10月)</div>
-                            <div>• 年线涨幅: +18.41%</div>
-                        </div>
-                        <div class="step">
-                            <div class="step-title">3️⃣ 技术面突破</div>
-                            <div>• 突破15年下降通道</div>
-                            <div>• 确认牛市格局</div>
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <div style="font-size: 11px; color: #666; margin-bottom: 5px;">📊 上证指数月度走势</div>
-                        <div class="mini-chart">
-                            <div class="month-bar" style="height: 60%;"><span class="month-label">1月</span></div>
-                            <div class="month-bar" style="height: 55%;"><span class="month-label">2月</span></div>
-                            <div class="month-bar" style="height: 50%;"><span class="month-label">3月</span></div>
-                            <div class="month-bar" style="height: 48%;"><span class="month-label">4月</span></div>
-                            <div class="month-bar" style="height: 58%;"><span class="month-label">5月</span></div>
-                            <div class="month-bar" style="height: 68%;"><span class="month-label">6月</span></div>
-                            <div class="month-bar" style="height: 78%;"><span class="month-label">7月</span></div>
-                            <div class="month-bar" style="height: 85%;"><span class="month-label">8月</span></div>
-                            <div class="month-bar" style="height: 90%;"><span class="month-label">9月</span></div>
-                            <div class="month-bar" style="height: 100%;"><span class="month-label">10月</span></div>
-                            <div class="month-bar" style="height: 95%;"><span class="month-label">11月</span></div>
-                            <div class="month-bar" style="height: 96%;"><span class="month-label">12月</span></div>
-                        </div>
-                    </div>
+                <div class="stat-item">
+                    <span class="stat-number">50</span>
+                    <span class="stat-label">每日学习量</span>
                 </div>
-            </div>
-            
-            <!-- Arrow -->
-            <div class="arrow-container">
-                <div class="arrow">➜</div>
-                <div class="arrow-text">洞察</div>
-            </div>
-            
-            <!-- Result Section - 最终结果 -->
-            <div class="section">
-                <div class="section-title">✅ 投资洞察 (Insights)</div>
-                <div class="result-box">
-                    <div class="result-highlight">
-                        <div class="result-title">🎯 2025年度成绩单</div>
-                        <div class="index-result">
-                            <span class="index-name">上证指数</span>
-                            <span class="index-value">+18.41% 📈</span>
-                        </div>
-                        <div class="index-result">
-                            <span class="index-name">深证成指</span>
-                            <span class="index-value">+29.87% 📈</span>
-                        </div>
-                        <div class="index-result">
-                            <span class="index-name">创业板指</span>
-                            <span class="index-value">+49.57% 🚀</span>
-                        </div>
-                        <div class="index-result">
-                            <span class="index-name">科创50</span>
-                            <span class="index-value">+35.92% 📈</span>
-                        </div>
-                    </div>
-                    
-                    <div class="key-insights">
-                        <div class="insight-item">
-                            <span class="checkmark">✓</span> <strong>528只</strong>个股翻倍
-                        </div>
-                        <div class="insight-item">
-                            <span class="checkmark">✓</span> 总市值: 92.97万亿 → <strong>115.86万亿</strong>
-                        </div>
-                        <div class="insight-item">
-                            <span class="checkmark">✓</span> 成交额创历史新高 <strong>400万亿+</strong>
-                        </div>
-                        <div class="insight-item">
-                            <span class="checkmark">✓</span> 领涨板块: 有色金属 <strong>+112%</strong>
-                        </div>
-                        <div class="insight-item">
-                            <span class="checkmark">✓</span> 2026展望: 关注<strong>科技股</strong>和<strong>消费股</strong>
-                        </div>
-                    </div>
+                <div class="stat-item">
+                    <span class="stat-number">76</span>
+                    <span class="stat-label">天完成计划</span>
                 </div>
             </div>
         </div>
-        
-        <div class="quote-box">
-            <div class="quote-text">
-                Quote: 从<span class="highlight">原始数据</span>到<span class="highlight">走势分析</span>再到<span class="highlight">投资洞察</span>，
-                完整的数据分析流程帮助我们洞察市场本质，做出明智决策。
+    </section>
+
+    <!-- 今日单词展示 -->
+    <section class="word-showcase">
+        <div class="showcase-container">
+            <div class="showcase-card active">
+                <div class="word-day">DAY 1</div>
+                <div class="word-content">
+                    <h3 class="word-title">abandon</h3>
+                    <p class="word-phonetic">/əˈbændən/</p>
+                    <p class="word-meaning">v. 放弃，遗弃</p>
+                    <p class="word-example">He abandoned his car in the snow.</p>
+                </div>
+            </div>
+            <div class="showcase-nav">
+                <button class="nav-btn prev">‹</button>
+                <div class="nav-dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <button class="nav-btn next">›</button>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- 学习数据 -->
+    <section class="stats-section" id="progress">
+        <div class="stats-grid">
+            <div class="stats-card">
+                <div class="stats-header">
+                    <span class="stats-icon">📊</span>
+                    <span class="stats-title">学习概览</span>
+                </div>
+                <ul class="stats-list">
+                    <li class="stats-item">
+                        <span class="item-icon">🎯</span>
+                        <span class="item-text">已学习 <strong>50</strong> 个单词</span>
+                    </li>
+                    <li class="stats-item">
+                        <span class="item-icon">🔥</span>
+                        <span class="item-text">连续打卡 <strong>1</strong> 天</span>
+                    </li>
+                    <li class="stats-item">
+                        <span class="item-icon">🧠</span>
+                        <span class="item-text">掌握率 <strong>85%</strong></span>
+                    </li>
+                    <li class="stats-item">
+                        <span class="item-icon">⏰</span>
+                        <span class="item-text">学习时长 <strong>30</strong> 分钟</span>
+                    </li>
+                    <li class="stats-item">
+                        <span class="item-icon">📈</span>
+                        <span class="item-text">进度 <strong>1.3%</strong></span>
+                    </li>
+                </ul>
+            </div>
+            <div class="stats-card">
+                <div class="stats-header">
+                    <span class="stats-icon">🏆</span>
+                    <span class="stats-title">学习成就</span>
+                </div>
+                <ul class="stats-list">
+                    <li class="stats-item">
+                        <span class="item-icon">🌟</span>
+                        <span class="item-text">完成首日学习</span>
+                    </li>
+                    <li class="stats-item">
+                        <span class="item-icon">💪</span>
+                        <span class="item-text">连续学习1天</span>
+                    </li>
+                    <li class="stats-item">
+                        <span class="item-icon">🎯</span>
+                        <span class="item-text">掌握10个单词</span>
+                    </li>
+                    <li class="stats-item">
+                        <span class="item-icon">🔥</span>
+                        <span class="item-text">学习热情满满</span>
+                    </li>
+                    <li class="stats-item">
+                        <span class="item-icon">📚</span>
+                        <span class="item-text">词汇量提升中</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 功能特色 -->
+    <section class="features" id="vocabulary">
+        <h2 class="section-title">学习特色</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">高频词汇</h3>
+                <p class="feature-desc">精选专升本考试高频词汇，精准覆盖考点</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔊</div>
+                <h3 class="feature-title">发音分解</h3>
+                <p class="feature-desc">音标拆解，轻松掌握正确发音</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💡</div>
+                <h3 class="feature-title">详细释义</h3>
+                <p class="feature-desc">多义词全面解析，例句辅助理解</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📅</div>
+                <h3 class="feature-title">每日计划</h3>
+                <p class="feature-desc">科学规划，每天50词，76天完成</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 今日单词列表 -->
+    <section class="word-list" id="practice">
+        <h2 class="section-title">今日单词 (Day 1)</h2>
+        <div class="word-table">
+            <div class="word-row header">
+                <span class="col-num">#</span>
+                <span class="col-word">单词</span>
+                <span class="col-phonetic">音标</span>
+                <span class="col-meaning">释义</span>
+                <span class="col-action">操作</span>
+            </div>
+            <div class="word-row">
+                <span class="col-num">1</span>
+                <span class="col-word">abandon</span>
+                <span class="col-phonetic">/əˈbændən/</span>
+                <span class="col-meaning">v. 放弃，遗弃</span>
+                <span class="col-action"><button class="btn-learn">学习</button></span>
+            </div>
+            <div class="word-row">
+                <span class="col-num">2</span>
+                <span class="col-word">ability</span>
+                <span class="col-phonetic">/əˈbɪləti/</span>
+                <span class="col-meaning">n. 能力，才能</span>
+                <span class="col-action"><button class="btn-learn">学习</button></span>
+            </div>
+            <div class="word-row">
+                <span class="col-num">3</span>
+                <span class="col-word">abroad</span>
+                <span class="col-phonetic">/əˈbrɔːd/</span>
+                <span class="col-meaning">adv. 在国外</span>
+                <span class="col-action"><button class="btn-learn">学习</button></span>
+            </div>
+            <div class="word-row">
+                <span class="col-num">4</span>
+                <span class="col-word">absence</span>
+                <span class="col-phonetic">/ˈæbsəns/</span>
+                <span class="col-meaning">n. 缺席，缺乏</span>
+                <span class="col-action"><button class="btn-learn">学习</button></span>
+            </div>
+            <div class="word-row">
+                <span class="col-num">5</span>
+                <span class="col-word">absolute</span>
+                <span class="col-phonetic">/ˈæbsəluːt/</span>
+                <span class="col-meaning">adj. 绝对的</span>
+                <span class="col-action"><button class="btn-learn">学习</button></span>
+            </div>
+        </div>
+        <div class="view-more">
+            <a href="#" class="btn-view">查看全部50词 →</a>
+        </div>
+    </section>
+
+    <!-- CTA按钮 -->
+    <section class="cta-section">
+        <div class="cta-buttons">
+            <a href="#vocabulary" class="btn-primary">
+                <span class="btn-icon">📖</span>
+                从 Day 1 开始
+            </a>
+            <a href="#" class="btn-secondary">
+                <span class="btn-icon">🎯</span>
+                制定学习计划
+            </a>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer" id="about">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=laoliu" alt="老六" class="footer-avatar">
+                <span class="footer-name">老六英语</span>
+            </div>
+            <p class="footer-desc">每天50词，专升本英语轻松过</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">GitHub</a>
+                <a href="#" class="footer-link">关于我们</a>
+                <a href="#" class="footer-link">联系方式</a>
+            </div>
+            <p class="footer-copyright">© 2024 老六英语. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
