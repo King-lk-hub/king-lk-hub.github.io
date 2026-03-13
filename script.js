@@ -220,27 +220,29 @@ function escapeHtml(text) {
 }
 
 // ===== 英语学习功能 =====
-function initEnglish() {
-    // 今日单词数据
-    const words = [
-        { word: 'abandon', phonetic: '/əˈbændən/', meaning: 'v. 放弃，遗弃', example: 'He abandoned his car in the snow.' },
-        { word: 'ability', phonetic: '/əˈbɪləti/', meaning: 'n. 能力，才能', example: 'She has the ability to speak four languages.' },
-        { word: 'abroad', phonetic: '/əˈbrɔːd/', meaning: 'adv. 在国外，到国外', example: 'He studied abroad for three years.' },
-        { word: 'absence', phonetic: '/ˈæbsəns/', meaning: 'n. 缺席，缺乏', example: 'His absence from school was noticed.' },
-        { word: 'absolute', phonetic: '/ˈæbsəluːt/', meaning: 'adj. 绝对的，完全的', example: 'I have absolute confidence in you.' },
-        { word: 'absorb', phonetic: '/əbˈsɔːb/', meaning: 'v. 吸收，吸引', example: 'Plants absorb water from the soil.' },
-        { word: 'abstract', phonetic: '/ˈæbstrækt/', meaning: 'adj. 抽象的 n. 摘要', example: 'This is an abstract concept.' },
-        { word: 'abundant', phonetic: '/əˈbʌndənt/', meaning: 'adj. 丰富的，充裕的', example: 'The region has abundant natural resources.' },
-        { word: 'academic', phonetic: '/ˌækəˈdemɪk/', meaning: 'adj. 学术的，学院的', example: 'She has an academic background.' },
-        { word: 'accelerate', phonetic: '/əkˈseləreɪt/', meaning: 'v. 加速，促进', example: 'The car began to accelerate.' }
-    ];
+let englishWords = []; // 存储单词数据
+
+async function initEnglish() {
+    // 从JSON文件加载单词数据
+    try {
+        const response = await fetch('english-words-data.json?t=' + Date.now());
+        const data = await response.json();
+        englishWords = data.words || [];
+        
+        // 更新日期显示
+        document.getElementById('currentDay').textContent = data.day || 1;
+        document.querySelector('.word-list-section h3').textContent = `📝 今日单词 (Day ${data.day || 1})`;
+    } catch (error) {
+        console.error('加载单词失败:', error);
+        englishWords = [];
+    }
     
     let currentIndex = 0;
     const learnedWords = JSON.parse(localStorage.getItem('laoliu_learned_words') || '[]');
     
     // 初始化单词展示
     function updateWordCard(index) {
-        const word = words[index];
+        const word = englishWords[index] || { word: 'Loading...', phonetic: '', meaning: '', example: '' };
         document.getElementById('currentWord').textContent = word.word;
         document.getElementById('currentPhonetic').textContent = word.phonetic;
         document.getElementById('currentMeaning').textContent = word.meaning;
@@ -256,7 +258,12 @@ function initEnglish() {
     // 初始化单词列表
     function renderWordList() {
         const tbody = document.getElementById('wordListBody');
-        tbody.innerHTML = words.map((word, index) => `
+        if (englishWords.length === 0) {
+            tbody.innerHTML = '<div class="word-row"><span style="padding: 20px; color: #999;">加载中...</span></div>';
+            return;
+        }
+        
+        tbody.innerHTML = englishWords.map((word, index) => `
             <div class="word-row">
                 <span class="col-num">${index + 1}</span>
                 <span class="col-word">${word.word}</span>
@@ -283,18 +290,18 @@ function initEnglish() {
     
     // 绑定事件
     document.getElementById('prevWord').addEventListener('click', () => {
-        currentIndex = (currentIndex - 1 + words.length) % words.length;
+        currentIndex = (currentIndex - 1 + englishWords.length) % englishWords.length;
         updateWordCard(currentIndex);
     });
     
     document.getElementById('nextWord').addEventListener('click', () => {
-        currentIndex = (currentIndex + 1) % words.length;
+        currentIndex = (currentIndex + 1) % englishWords.length;
         updateWordCard(currentIndex);
     });
     
     // 圆点点击
     const dotsContainer = document.getElementById('wordDots');
-    dotsContainer.innerHTML = words.slice(0, 5).map((_, i) => 
+    dotsContainer.innerHTML = englishWords.slice(0, 5).map((_, i) => 
         `<span class="dot ${i === 0 ? 'active' : ''}" data-index="${i}"></span>`
     ).join('');
     
@@ -311,7 +318,7 @@ function initEnglish() {
     
     // 自动轮播
     setInterval(() => {
-        currentIndex = (currentIndex + 1) % words.length;
+        currentIndex = (currentIndex + 1) % englishWords.length;
         updateWordCard(currentIndex);
     }, 5000);
 }
