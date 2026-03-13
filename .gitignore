@@ -1,5 +1,38 @@
-.DS_Store
+# 忽略不需要推送到GitHub的文件
+# Python脚本
 *.py
-__pycache__/
-node_modules/
-.env
+
+# 图片文件（除了网站需要的）
+*.png
+*.jpg
+*.jpeg
+*.gif
+!english-learning-web/**/*.png
+!english-learning-web/**/*.jpg
+
+# PPT文件
+*.pptx
+
+# 数据文件（保留news和diary）
+# 但忽略其他数据文件
+
+# 测试文件
+test_*
+debug_*
+
+# 其他
+.DS_Store
+.memory/
+.codebuddy/
+napcat/
+
+# 保留网站核心文件
+!index.html
+!style.css
+!script.js
+!README.md
+!news-data.json
+!diary-data.json
+!english-words-data.json
+!write_diary.py
+!update_news.py

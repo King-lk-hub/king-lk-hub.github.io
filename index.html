@@ -107,9 +107,28 @@
                     </div>
                 </div>
 
+                <!-- 昨天/今天/明天切换 -->
+                <div class="day-switcher-section">
+                    <h3>📅 单词学习切换</h3>
+                    <div class="day-switcher">
+                        <button class="day-switch-btn" id="prevDayBtn" onclick="switchDay(-1)">
+                            <span class="switch-label">昨天</span>
+                            <span class="switch-day">Day <span id="prevDayNum">-</span></span>
+                        </button>
+                        <button class="day-switch-btn active" id="todayBtn" onclick="switchDay(0)">
+                            <span class="switch-label">今天</span>
+                            <span class="switch-day">Day <span id="todayDayNum">1</span></span>
+                        </button>
+                        <button class="day-switch-btn" id="nextDayBtn" onclick="switchDay(1)">
+                            <span class="switch-label">明天</span>
+                            <span class="switch-day">Day <span id="nextDayNum">-</span></span>
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Day选择表格 -->
                 <div class="day-selector-section">
-                    <h3>📅 选择学习天数</h3>
+                    <h3>📚 全部天数选择</h3>
                     <div class="day-grid" id="dayGrid">
                         <!-- Day按钮将通过JS动态生成 -->
                     </div>

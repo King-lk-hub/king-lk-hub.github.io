@@ -104,12 +104,12 @@ async function loadDiaries() {
         const dayNumber = allDiaries.length - index; // Day编号（从最早开始算）
         const shortTitle = diary.title.length > 30 ? diary.title.substring(0, 30) + '...' : diary.title;
         
-        // 生成随机配图（根据日记内容生成不同的图片）
-        const imageUrl = generateDiaryImage(diary, index);
+        // 使用日记数据中的配图，如果没有则使用默认图
+        const imageUrl = diary.image || 'https://image.pollinations.ai/prompt/cute%20red%20lobster%20robot%20learning%20growing%20books%20computer%20cozy%20workspace?width=400&height=250&nologo=true';
         
         return `
             <div class="diary-card" onclick="openDiaryModal(${diary.id})">
-                <img src="${imageUrl}" alt="日记配图" class="diary-card-image" loading="lazy">
+                <img src="${imageUrl}" alt="日记配图" class="diary-card-image" loading="lazy" onerror="this.src='https://image.pollinations.ai/prompt/cute%20red%20lobster%20robot%20learning%20growing?width=400&height=250&nologo=true'">
                 <span class="diary-day-tag">Day ${dayNumber}</span>
                 <div class="diary-card-content">
                     <p class="diary-card-title">${escapeHtml(shortTitle)}</p>
@@ -180,11 +180,13 @@ function openDiaryModal(id) {
     document.getElementById('modalDiaryMood').textContent = diary.mood || '😊';
     document.getElementById('modalDiaryContent').textContent = diary.content;
     
-    // 设置图片
-    const imageWrapper = document.getElementById('modalImageWrapper');
+    // 设置图片 - 使用日记数据中的配图
     const image = document.getElementById('modalDiaryImage');
-    const imageUrl = generateDiaryImage(diary, index);
+    const imageUrl = diary.image || 'https://image.pollinations.ai/prompt/cute%20red%20lobster%20robot%20learning%20growing?width=400&height=250&nologo=true';
     image.src = imageUrl;
+    image.onerror = function() {
+        this.src = 'https://image.pollinations.ai/prompt/cute%20red%20lobster%20robot%20learning%20growing?width=400&height=250&nologo=true';
+    };
     
     // 显示弹窗
     document.getElementById('diaryModal').classList.add('show');
@@ -222,6 +224,7 @@ function escapeHtml(text) {
 // ===== 英语学习功能 =====
 let englishWords = []; // 存储单词数据
 let currentDay = 1; // 当前选中的Day
+let todayDay = 1; // 今天是第几天
 const totalDays = 76; // 总共76天
 
 async function initEnglish() {
@@ -230,20 +233,70 @@ async function initEnglish() {
         const response = await fetch('english-words-data.json?t=' + Date.now());
         const data = await response.json();
         englishWords = data.words || [];
-        currentDay = data.day || 1;
+        todayDay = data.day || 1;
+        currentDay = todayDay;
         
         // 更新日期显示
-        document.getElementById('currentDay').textContent = currentDay;
-        document.getElementById('listDay').textContent = currentDay;
-        document.getElementById('dayCount').textContent = currentDay;
+        updateDayDisplay();
         
         // 生成Day选择表格
         renderDayGrid();
+        
+        // 更新昨天/今天/明天按钮
+        updateDaySwitcher();
         
     } catch (error) {
         console.error('加载单词失败:', error);
         englishWords = [];
     }
+}
+
+// 更新日期显示
+function updateDayDisplay() {
+    document.getElementById('currentDay').textContent = currentDay;
+    document.getElementById('listDay').textContent = currentDay;
+    document.getElementById('dayCount').textContent = currentDay;
+}
+
+// 更新昨天/今天/明天切换按钮
+function updateDaySwitcher() {
+    const prevDay = currentDay > 1 ? currentDay - 1 : totalDays;
+    const nextDay = currentDay < totalDays ? currentDay + 1 : 1;
+    
+    document.getElementById('prevDayNum').textContent = prevDay;
+    document.getElementById('todayDayNum').textContent = currentDay;
+    document.getElementById('nextDayNum').textContent = nextDay;
+    
+    // 更新按钮状态
+    document.querySelectorAll('.day-switch-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    if (currentDay === todayDay) {
+        document.getElementById('todayBtn').classList.add('active');
+    } else if (currentDay === (todayDay > 1 ? todayDay - 1 : totalDays)) {
+        document.getElementById('prevDayBtn').classList.add('active');
+    } else if (currentDay === (todayDay < totalDays ? todayDay + 1 : 1)) {
+        document.getElementById('nextDayBtn').classList.add('active');
+    }
+}
+
+// 切换昨天/今天/明天
+async function switchDay(offset) {
+    let newDay;
+    if (offset === -1) {
+        // 昨天
+        newDay = currentDay > 1 ? currentDay - 1 : totalDays;
+    } else if (offset === 0) {
+        // 今天
+        newDay = todayDay;
+    } else if (offset === 1) {
+        // 明天
+        newDay = currentDay < totalDays ? currentDay + 1 : 1;
+    }
+    
+    await selectDay(newDay);
+}
     
     let currentIndex = 0;
     const learnedWords = JSON.parse(localStorage.getItem('laoliu_learned_words') || '[]');
@@ -283,20 +336,19 @@ async function initEnglish() {
         });
         
         // 更新显示
-        document.getElementById('currentDay').textContent = day;
-        document.getElementById('listDay').textContent = day;
-        document.getElementById('dayCount').textContent = day;
+        updateDayDisplay();
+        updateDaySwitcher();
         
-        // 加载对应天的单词（这里用模拟数据，实际应该从不同文件加载）
-        // 目前只有Day 1的数据，其他天用循环生成
+        // 加载对应天的单词
         if (day === 1) {
             englishWords = await loadWordsForDay(1);
         } else {
-            // 模拟其他天的数据（实际应该从不同JSON文件加载）
+            // 模拟其他天的数据
             englishWords = generateWordsForDay(day);
         }
         
         // 重新渲染
+        currentIndex = 0;
         updateWordCard(0);
         renderWordList();
         updateDots();

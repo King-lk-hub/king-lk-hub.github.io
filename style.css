@@ -400,6 +400,68 @@ body {
     font-size: 16px;
 }
 
+/* 昨天/今天/明天切换 */
+.day-switcher-section {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+}
+
+.day-switcher-section h3 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.day-switcher {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.day-switch-btn {
+    flex: 1;
+    max-width: 150px;
+    padding: 16px 20px;
+    border: 2px solid var(--border-color);
+    background: var(--card-bg);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.day-switch-btn:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+.day-switch-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.day-switch-btn .switch-label {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.day-switch-btn.active .switch-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.day-switch-btn .switch-day {
+    font-size: 16px;
+    font-weight: 700;
+}
+
 /* Day选择表格 */
 .day-selector-section {
     background: var(--card-bg);
