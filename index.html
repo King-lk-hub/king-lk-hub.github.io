@@ -93,12 +93,12 @@
                             <span class="progress-label">已学习</span>
                         </div>
                         <div class="progress-item">
-                            <span class="progress-number" id="dayCount">1</span>
-                            <span class="progress-label">第几天</span>
+                            <span class="progress-number" id="dayCount">2</span>
+                            <span class="progress-label">当前组</span>
                         </div>
                         <div class="progress-item">
-                            <span class="progress-number" id="streakCount">1</span>
-                            <span class="progress-label">连续打卡</span>
+                            <span class="progress-number" id="streakCount">150</span>
+                            <span class="progress-label">总词数</span>
                         </div>
                         <div class="progress-item">
                             <span class="progress-number" id="progressPercent">0%</span>
@@ -107,37 +107,29 @@
                     </div>
                 </div>
 
-                <!-- 昨天/今天/明天切换 -->
+                <!-- 单词组切换 -->
                 <div class="day-switcher-section">
                     <h3>📅 单词学习切换</h3>
                     <div class="day-switcher">
-                        <button class="day-switch-btn" id="prevDayBtn" onclick="switchDay(-1)">
-                            <span class="switch-label">昨天</span>
-                            <span class="switch-day">Day <span id="prevDayNum">-</span></span>
+                        <button class="day-switch-btn" id="group1Btn" onclick="switchGroup(1)">
+                            <span class="switch-label">第一组</span>
+                            <span class="switch-day">1-50词</span>
                         </button>
-                        <button class="day-switch-btn active" id="todayBtn" onclick="switchDay(0)">
-                            <span class="switch-label">今天</span>
-                            <span class="switch-day">Day <span id="todayDayNum">1</span></span>
+                        <button class="day-switch-btn active" id="group2Btn" onclick="switchGroup(2)">
+                            <span class="switch-label">第二组</span>
+                            <span class="switch-day">51-100词</span>
                         </button>
-                        <button class="day-switch-btn" id="nextDayBtn" onclick="switchDay(1)">
-                            <span class="switch-label">明天</span>
-                            <span class="switch-day">Day <span id="nextDayNum">-</span></span>
+                        <button class="day-switch-btn" id="group3Btn" onclick="switchGroup(3)">
+                            <span class="switch-label">第三组</span>
+                            <span class="switch-day">101-150词</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Day选择表格 -->
-                <div class="day-selector-section">
-                    <h3>📚 全部天数选择</h3>
-                    <div class="day-grid" id="dayGrid">
-                        <!-- Day按钮将通过JS动态生成 -->
-                    </div>
-                </div>
-
-                <!-- 今日单词展示 -->
+                <!-- 单词展示 -->
                 <div class="word-showcase">
                     <div class="showcase-card">
-                        <div class="word-day">DAY <span id="currentDay">1</span></div>
+                        <div class="word-day">第 <span id="currentDay">2</span> 组</div>
                         <div class="word-content">
                             <h3 class="word-title" id="currentWord">abandon</h3>
                             <p class="word-phonetic" id="currentPhonetic">/əˈbændən/</p>
@@ -158,9 +150,9 @@
                     </div>
                 </div>
 
-                <!-- 今日单词列表 -->
+                <!-- 单词列表 -->
                 <div class="word-list-section">
-                    <h3>📝 今日单词 (Day <span id="listDay">1</span>) - 共50词</h3>
+                    <h3>📝 第2组单词 (51-100词)</h3>
                     <div class="word-table">
                         <div class="word-row header">
                             <span class="col-num">#</span>

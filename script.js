@@ -222,12 +222,11 @@ function escapeHtml(text) {
 }
 
 // ===== 英语学习功能 =====
-let englishWords = []; // 存储单词数据
-let currentDay = 1; // 当前选中的Day
-let todayDay = 1; // 今天是第几天
-const totalDays = 76; // 总共76天
+let englishWords = []; // 存储当前组单词数据
+let currentGroup = 2; // 当前选中的组（1/2/3）
 let currentIndex = 0; // 当前单词索引
 let learnedWords = []; // 已学单词列表
+let allWordsData = []; // 存储所有单词数据
 
 async function initEnglish() {
     // 初始化已学单词列表
@@ -237,23 +236,10 @@ async function initEnglish() {
     try {
         const response = await fetch('english-words-data.json?t=' + Date.now());
         const data = await response.json();
-        englishWords = data.words || [];
-        todayDay = data.day || 1;
-        currentDay = todayDay;
+        allWordsData = data.words || [];
         
-        // 更新日期显示
-        updateDayDisplay();
-        
-        // 生成Day选择表格
-        renderDayGrid();
-        
-        // 更新昨天/今天/明天按钮
-        updateDaySwitcher();
-        
-        // 初始化单词展示
-        updateDots();
-        updateWordCard(0);
-        renderWordList();
+        // 默认显示第二组
+        switchGroup(2);
         
         // 绑定事件
         bindWordEvents();
@@ -263,132 +249,77 @@ async function initEnglish() {
         
     } catch (error) {
         console.error('加载单词失败:', error);
-        englishWords = [];
+        allWordsData = [];
+        // 使用模拟数据
+        switchGroup(2);
+        bindWordEvents();
+        startAutoPlay();
     }
 }
 
-// 更新日期显示
-function updateDayDisplay() {
-    document.getElementById('currentDay').textContent = currentDay;
-    document.getElementById('listDay').textContent = currentDay;
-    document.getElementById('dayCount').textContent = currentDay;
-}
-
-// 更新昨天/今天/明天切换按钮
-function updateDaySwitcher() {
-    const prevDay = currentDay > 1 ? currentDay - 1 : totalDays;
-    const nextDay = currentDay < totalDays ? currentDay + 1 : 1;
-    
-    document.getElementById('prevDayNum').textContent = prevDay;
-    document.getElementById('todayDayNum').textContent = currentDay;
-    document.getElementById('nextDayNum').textContent = nextDay;
+// 切换单词组
+function switchGroup(group) {
+    currentGroup = group;
+    currentIndex = 0;
     
     // 更新按钮状态
     document.querySelectorAll('.day-switch-btn').forEach(btn => {
         btn.classList.remove('active');
     });
+    document.getElementById(`group${group}Btn`).classList.add('active');
     
-    if (currentDay === todayDay) {
-        document.getElementById('todayBtn').classList.add('active');
-    } else if (currentDay === (todayDay > 1 ? todayDay - 1 : totalDays)) {
-        document.getElementById('prevDayBtn').classList.add('active');
-    } else if (currentDay === (todayDay < totalDays ? todayDay + 1 : 1)) {
-        document.getElementById('nextDayBtn').classList.add('active');
+    // 根据组获取对应单词
+    const startIndex = (group - 1) * 50;
+    const endIndex = startIndex + 50;
+    englishWords = allWordsData.slice(startIndex, endIndex);
+    
+    // 如果数据不足，用模拟数据填充
+    if (englishWords.length < 50) {
+        englishWords = generateWordsForGroup(group);
     }
-}
-
-// 切换昨天/今天/明天
-async function switchDay(offset) {
-    let newDay;
-    if (offset === -1) {
-        newDay = currentDay > 1 ? currentDay - 1 : totalDays;
-    } else if (offset === 0) {
-        newDay = todayDay;
-    } else if (offset === 1) {
-        newDay = currentDay < totalDays ? currentDay + 1 : 1;
-    }
-    
-    await selectDay(newDay);
-}
-
-// 生成Day选择表格
-function renderDayGrid() {
-    const dayGrid = document.getElementById('dayGrid');
-    const learnedDays = JSON.parse(localStorage.getItem('laoliu_learned_days') || '[]');
-    
-    dayGrid.innerHTML = '';
-    for (let i = 1; i <= totalDays; i++) {
-        const btn = document.createElement('button');
-        btn.className = 'day-btn';
-        btn.textContent = `Day ${i}`;
-        
-        if (i === currentDay) {
-            btn.classList.add('active');
-        } else if (learnedDays.includes(i)) {
-            btn.classList.add('completed');
-        }
-        
-        btn.onclick = () => selectDay(i);
-        dayGrid.appendChild(btn);
-    }
-}
-
-// 选择某一天
-async function selectDay(day) {
-    currentDay = day;
-    
-    // 更新按钮状态
-    document.querySelectorAll('.day-btn').forEach((btn, index) => {
-        btn.classList.remove('active');
-        if (index + 1 === day) {
-            btn.classList.add('active');
-        }
-    });
     
     // 更新显示
-    updateDayDisplay();
-    updateDaySwitcher();
-    
-    // 加载对应天的单词
-    if (day === 1) {
-        englishWords = await loadWordsForDay(1);
-    } else {
-        englishWords = generateWordsForDay(day);
-    }
-    
-    // 重新渲染
-    currentIndex = 0;
+    updateGroupDisplay();
     updateWordCard(0);
-    renderWordList();
     updateDots();
+    renderWordList();
 }
 
-// 加载指定天的单词
-async function loadWordsForDay(day) {
-    try {
-        const response = await fetch(`english-words-data-day${day}.json?t=${Date.now()}`);
-        const data = await response.json();
-        return data.words || [];
-    } catch (error) {
-        return generateWordsForDay(day);
-    }
+// 更新组显示
+function updateGroupDisplay() {
+    document.getElementById('currentDay').textContent = currentGroup;
+    document.getElementById('listDay').textContent = currentGroup;
+    document.getElementById('dayCount').textContent = currentGroup;
+    
+    // 更新单词列表标题
+    const startWord = (currentGroup - 1) * 50 + 1;
+    const endWord = startWord + 49;
+    document.querySelector('.word-list-section h3').textContent = 
+        `📝 第${currentGroup}组单词 (${startWord}-${endWord}词)`;
 }
 
-// 生成指定天的单词（模拟数据）
-function generateWordsForDay(day) {
+// 为组生成模拟单词
+function generateWordsForGroup(group) {
     const baseWords = [
         { word: 'abandon', phonetic: '/əˈbændən/', meaning: 'v. 放弃，遗弃', example: 'He abandoned his car in the snow.' },
         { word: 'ability', phonetic: '/əˈbɪləti/', meaning: 'n. 能力，才能', example: 'She has the ability to speak four languages.' },
         { word: 'abroad', phonetic: '/əˈbrɔːd/', meaning: 'adv. 在国外，到国外', example: 'He studied abroad for three years.' },
         { word: 'absence', phonetic: '/ˈæbsəns/', meaning: 'n. 缺席，缺乏', example: 'His absence from school was noticed.' },
-        { word: 'absolute', phonetic: '/ˈæbsəluːt/', meaning: 'adj. 绝对的，完全的', example: 'I have absolute confidence in you.' }
+        { word: 'absolute', phonetic: '/ˈæbsəluːt/', meaning: 'adj. 绝对的，完全的', example: 'I have absolute confidence in you.' },
+        { word: 'absorb', phonetic: '/əbˈsɔːb/', meaning: 'v. 吸收，吸引', example: 'Plants absorb water from the soil.' },
+        { word: 'abstract', phonetic: '/ˈæbstrækt/', meaning: 'adj. 抽象的', example: 'The concept is too abstract to understand.' },
+        { word: 'abundant', phonetic: '/əˈbʌndənt/', meaning: 'adj. 丰富的，充裕的', example: 'The country has abundant natural resources.' },
+        { word: 'academic', phonetic: '/ˌækəˈdemɪk/', meaning: 'adj. 学术的', example: 'She has a strong academic background.' },
+        { word: 'accelerate', phonetic: '/əkˈseləreɪt/', meaning: 'v. 加速', example: 'The car accelerated down the highway.' }
     ];
     
     const words = [];
+    const startIndex = (group - 1) * 50;
+    
     for (let i = 0; i < 50; i++) {
         const baseWord = baseWords[i % baseWords.length];
         words.push({
-            word: `${baseWord.word}_${day}_${i + 1}`,
+            word: baseWord.word,
             phonetic: baseWord.phonetic,
             meaning: baseWord.meaning,
             example: baseWord.example
@@ -400,7 +331,7 @@ function generateWordsForDay(day) {
 // 更新单词卡片
 function updateWordCard(index) {
     const word = englishWords[index] || { word: 'Loading...', phonetic: '', meaning: '', example: '' };
-    document.getElementById('currentWord').textContent = word.word.split('_')[0];
+    document.getElementById('currentWord').textContent = word.word;
     document.getElementById('currentPhonetic').textContent = word.phonetic;
     document.getElementById('currentMeaning').textContent = word.meaning;
     document.getElementById('currentExample').textContent = word.example;
@@ -436,17 +367,16 @@ function renderWordList() {
     }
     
     tbody.innerHTML = englishWords.map((word, index) => {
-        const cleanWord = word.word.split('_')[0];
         return `
         <div class="word-row">
             <span class="col-num">${index + 1}</span>
-            <span class="col-word">${cleanWord}</span>
+            <span class="col-word">${word.word}</span>
             <span class="col-phonetic">${word.phonetic}</span>
             <span class="col-meaning">${word.meaning}</span>
             <span class="col-status">
-                <button class="status-btn ${learnedWords.includes(cleanWord) ? 'learned' : ''}" 
-                        onclick="toggleLearned('${cleanWord}', this)">
-                    ${learnedWords.includes(cleanWord) ? '已学' : '学习'}
+                <button class="status-btn ${learnedWords.includes(word.word) ? 'learned' : ''}" 
+                        onclick="toggleLearned('${word.word}', this)">
+                    ${learnedWords.includes(word.word) ? '已学' : '学习'}
                 </button>
             </span>
         </div>
@@ -458,7 +388,7 @@ function renderWordList() {
 // 更新进度
 function updateProgress() {
     document.getElementById('learnedCount').textContent = learnedWords.length;
-    const totalWordsCount = englishWords.length || 50;
+    const totalWordsCount = 150; // 三组共150词
     document.getElementById('progressPercent').textContent = Math.round(learnedWords.length / totalWordsCount * 100) + '%';
 }
 
@@ -485,27 +415,27 @@ function startAutoPlay() {
 
 // 切换学习状态
 function toggleLearned(word, btn) {
-    const learnedWords = JSON.parse(localStorage.getItem('laoliu_learned_words') || '[]');
+    const currentLearned = JSON.parse(localStorage.getItem('laoliu_learned_words') || '[]');
     
-    if (learnedWords.includes(word)) {
+    if (currentLearned.includes(word)) {
         // 取消学习
-        const index = learnedWords.indexOf(word);
-        learnedWords.splice(index, 1);
+        const index = currentLearned.indexOf(word);
+        currentLearned.splice(index, 1);
         btn.classList.remove('learned');
         btn.textContent = '学习';
+        learnedWords = currentLearned;
     } else {
         // 标记已学
-        learnedWords.push(word);
+        currentLearned.push(word);
         btn.classList.add('learned');
         btn.textContent = '已学';
+        learnedWords = currentLearned;
     }
     
-    localStorage.setItem('laoliu_learned_words', JSON.stringify(learnedWords));
+    localStorage.setItem('laoliu_learned_words', JSON.stringify(currentLearned));
     
     // 更新进度
-    document.getElementById('learnedCount').textContent = learnedWords.length;
-    const totalWords = 10; // 当前展示的单词总数
-    document.getElementById('progressPercent').textContent = Math.round(learnedWords.length / totalWords * 100) + '%';
+    updateProgress();
 }
 
 // ===== 每日快讯功能 =====
