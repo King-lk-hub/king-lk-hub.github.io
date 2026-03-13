@@ -887,26 +887,10 @@ body {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    padding: 4px;
 }
 
-.news-loading {
-    text-align: center;
-    padding: 60px;
-    color: var(--text-secondary);
-}
-
-.loading-icon {
-    font-size: 48px;
-    display: block;
-    margin-bottom: 12px;
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-
+/* 新闻卡片优化 */
 .news-card {
     background: var(--card-bg);
     border-radius: 12px;
@@ -915,6 +899,25 @@ body {
     transition: transform 0.3s, box-shadow 0.3s;
     cursor: pointer;
     border-left: 4px solid var(--primary-color);
+    position: relative;
+    overflow: hidden;
+}
+
+/* 添加卡片顶部装饰线 */
+.news-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), #6c5ce7);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.news-card:hover::before {
+    opacity: 1;
 }
 
 .news-card:hover {
@@ -1160,6 +1163,12 @@ body {
     font-size: 15px;
     border-radius: 50%;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    transition: transform 0.3s ease;
+}
+
+.news-card:hover .news-rank {
+    transform: scale(1.1);
 }
 
 .news-rank.top3 {
@@ -1248,10 +1257,17 @@ body {
     align-items: center;
     justify-content: center;
     padding: 20px;
+    backdrop-filter: blur(4px);
 }
 
 .news-modal.show {
     display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .modal-content {
@@ -1264,6 +1280,18 @@ body {
     display: flex;
     flex-direction: column;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .modal-header {
@@ -1395,10 +1423,41 @@ body {
 @media (max-width: 768px) {
     .news-categories {
         justify-content: center;
+        gap: 8px;
+    }
+    
+    .category-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+    
+    .news-card {
+        padding: 16px;
+    }
+    
+    .news-rank {
+        top: 12px;
+        right: 12px;
+        width: 30px;
+        height: 30px;
+        font-size: 13px;
+    }
+    
+    .news-title {
+        font-size: 16px;
+    }
+    
+    .news-summary {
+        font-size: 14px;
     }
     
     .modal-content {
         max-height: 90vh;
+        border-radius: 12px;
+    }
+    
+    .modal-header {
+        padding: 16px;
     }
     
     .modal-header h3 {
@@ -1408,6 +1467,27 @@ body {
     .modal-meta {
         flex-direction: column;
         gap: 8px;
+    }
+    
+    .modal-body {
+        padding: 16px;
+        font-size: 15px;
+    }
+}
+
+/* 更小屏幕优化 */
+@media (max-width: 480px) {
+    .news-header h2 {
+        font-size: 20px;
+    }
+    
+    .news-categories {
+        gap: 6px;
+    }
+    
+    .category-btn {
+        padding: 6px 12px;
+        font-size: 12px;
     }
 }
 
