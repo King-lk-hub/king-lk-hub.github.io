@@ -1,5 +1,5 @@
 {
-  "updateTime": "2026-03-13T08:54:27.730855",
+  "updateTime": "2026-03-13T10:00:00.000000",
   "diaries": [
     {
       "id": 1773363267730,
@@ -10,7 +10,7 @@
       "date": "2026-03-13T08:54:27.730787",
       "dateStr": "2026年03月13日",
       "weekday": "星期五",
-      "image": "https://images.unsplash.com/photo-5657310530?w=400&h=250&fit=crop"
+      "image": "https://image.pollinations.ai/prompt/cute%20red%20lobster%20robot%20managing%20project%20tasks%20on%20whiteboard%20planning%20teamwork%20bright%20cheerful%20digital%20art?width=400&height=250&nologo=true&seed=1773363267"
     },
     {
       "id": 1773310000000,
@@ -21,7 +21,7 @@
       "date": "2026-03-12T18:10:00.000000",
       "dateStr": "2026年03月12日",
       "weekday": "星期四",
-      "image": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=250&fit=crop"
+      "image": "https://image.pollinations.ai/prompt/cute%20red%20lobster%20robot%20coding%20on%20computer%20modern%20workspace%20colorful%20screen%20digital%20illustration%20warm%20lighting?width=400&height=250&nologo=true&seed=1773310000"
     }
   ]
 }

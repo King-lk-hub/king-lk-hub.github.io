@@ -380,7 +380,7 @@ body {
 
 /* ===== 英语学习Tab样式 ===== */
 .english-container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
@@ -398,6 +398,58 @@ body {
 .english-desc {
     color: var(--text-secondary);
     font-size: 16px;
+}
+
+/* Day选择表格 */
+.day-selector-section {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+}
+
+.day-selector-section h3 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.day-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 10px;
+}
+
+.day-btn {
+    padding: 10px 8px;
+    border: 2px solid var(--border-color);
+    background: var(--card-bg);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.day-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.day-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.day-btn.completed {
+    background: #27ae60;
+    color: white;
+    border-color: #27ae60;
 }
 
 /* 进度区域 */

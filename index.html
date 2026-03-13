@@ -107,6 +107,14 @@
                     </div>
                 </div>
 
+                <!-- Day选择表格 -->
+                <div class="day-selector-section">
+                    <h3>📅 选择学习天数</h3>
+                    <div class="day-grid" id="dayGrid">
+                        <!-- Day按钮将通过JS动态生成 -->
+                    </div>
+                </div>
+
                 <!-- 今日单词展示 -->
                 <div class="word-showcase">
                     <div class="showcase-card">
@@ -133,7 +141,7 @@
 
                 <!-- 今日单词列表 -->
                 <div class="word-list-section">
-                    <h3>📝 今日单词 (Day 1)</h3>
+                    <h3>📝 今日单词 (Day <span id="listDay">1</span>) - 共50词</h3>
                     <div class="word-table">
                         <div class="word-row header">
                             <span class="col-num">#</span>
