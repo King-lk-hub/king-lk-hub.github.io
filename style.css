@@ -1415,50 +1415,15 @@ body {
 .global-footer {
     background: var(--card-bg);
     border-top: 1px solid var(--border-color);
-    padding: 16px 40px;
+    padding: 20px;
     margin-top: 40px;
+    text-align: center;
 }
 
-.footer-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 24px;
-    flex-wrap: wrap;
+.global-footer p {
     font-size: 14px;
     color: var(--text-secondary);
-}
-
-.footer-brand {
-    font-weight: 500;
-    color: var(--primary-color);
-}
-
-.footer-copyright {
-    color: var(--text-secondary);
-}
-
-.footer-link {
-    color: var(--secondary-color);
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.footer-link:hover {
-    color: var(--primary-color);
-    text-decoration: underline;
-}
-
-@media (max-width: 768px) {
-    .global-footer {
-        padding: 12px 20px;
-    }
-    
-    .footer-content {
-        flex-direction: column;
-        gap: 8px;
-        text-align: center;
-    }
+    margin: 0;
 }
 
 /* ===== 日记卡片图片自适应 ===== */
