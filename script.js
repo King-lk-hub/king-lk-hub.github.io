@@ -223,10 +223,33 @@ function escapeHtml(text) {
 
 // ===== 英语学习功能 =====
 let englishWords = []; // 存储当前组单词数据
-let currentGroup = 2; // 当前选中的组（1/2/3）
+let currentGroup = 1; // 当前选中的组（1/2/3）
 let currentIndex = 0; // 当前单词索引
 let learnedWords = []; // 已学单词列表
 let allWordsData = []; // 存储所有单词数据
+
+// 根据日期计算当前应该显示哪一组（每天9点更新）
+function getCurrentGroup() {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const baseDate = new Date(2026, 2, 13); // 基准日期：2026-03-13
+    
+    // 计算从基准日期开始过了多少天
+    const diffTime = today - baseDate;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    // 每天切换一组，循环3组
+    const group = (diffDays % 3) + 1;
+    
+    // 检查是否过了今天9点
+    const nineAM = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0);
+    if (now < nineAM) {
+        // 还没到9点，显示昨天的组
+        return ((diffDays - 1) % 3) + 1;
+    }
+    
+    return group;
+}
 
 async function initEnglish() {
     // 初始化已学单词列表
@@ -238,8 +261,9 @@ async function initEnglish() {
         const data = await response.json();
         allWordsData = data.words || [];
         
-        // 默认显示第二组
-        switchGroup(2);
+        // 根据日期自动选择当前组
+        const autoGroup = getCurrentGroup();
+        switchGroup(autoGroup);
         
         // 绑定事件
         bindWordEvents();
@@ -251,7 +275,7 @@ async function initEnglish() {
         console.error('加载单词失败:', error);
         allWordsData = [];
         // 使用模拟数据
-        switchGroup(2);
+        switchGroup(1);
         bindWordEvents();
         startAutoPlay();
     }
@@ -271,12 +295,9 @@ function switchGroup(group) {
     // 根据组获取对应单词
     const startIndex = (group - 1) * 50;
     const endIndex = startIndex + 50;
-    englishWords = allWordsData.slice(startIndex, endIndex);
     
-    // 如果数据不足，用模拟数据填充
-    if (englishWords.length < 50) {
-        englishWords = generateWordsForGroup(group);
-    }
+    // 获取对应组的单词
+    englishWords = allWordsData.slice(startIndex, endIndex);
     
     // 更新显示
     updateGroupDisplay();
@@ -288,7 +309,6 @@ function switchGroup(group) {
 // 更新组显示
 function updateGroupDisplay() {
     document.getElementById('currentDay').textContent = currentGroup;
-    document.getElementById('listDay').textContent = currentGroup;
     document.getElementById('dayCount').textContent = currentGroup;
     
     // 更新单词列表标题
@@ -296,36 +316,6 @@ function updateGroupDisplay() {
     const endWord = startWord + 49;
     document.querySelector('.word-list-section h3').textContent = 
         `📝 第${currentGroup}组单词 (${startWord}-${endWord}词)`;
-}
-
-// 为组生成模拟单词
-function generateWordsForGroup(group) {
-    const baseWords = [
-        { word: 'abandon', phonetic: '/əˈbændən/', meaning: 'v. 放弃，遗弃', example: 'He abandoned his car in the snow.' },
-        { word: 'ability', phonetic: '/əˈbɪləti/', meaning: 'n. 能力，才能', example: 'She has the ability to speak four languages.' },
-        { word: 'abroad', phonetic: '/əˈbrɔːd/', meaning: 'adv. 在国外，到国外', example: 'He studied abroad for three years.' },
-        { word: 'absence', phonetic: '/ˈæbsəns/', meaning: 'n. 缺席，缺乏', example: 'His absence from school was noticed.' },
-        { word: 'absolute', phonetic: '/ˈæbsəluːt/', meaning: 'adj. 绝对的，完全的', example: 'I have absolute confidence in you.' },
-        { word: 'absorb', phonetic: '/əbˈsɔːb/', meaning: 'v. 吸收，吸引', example: 'Plants absorb water from the soil.' },
-        { word: 'abstract', phonetic: '/ˈæbstrækt/', meaning: 'adj. 抽象的', example: 'The concept is too abstract to understand.' },
-        { word: 'abundant', phonetic: '/əˈbʌndənt/', meaning: 'adj. 丰富的，充裕的', example: 'The country has abundant natural resources.' },
-        { word: 'academic', phonetic: '/ˌækəˈdemɪk/', meaning: 'adj. 学术的', example: 'She has a strong academic background.' },
-        { word: 'accelerate', phonetic: '/əkˈseləreɪt/', meaning: 'v. 加速', example: 'The car accelerated down the highway.' }
-    ];
-    
-    const words = [];
-    const startIndex = (group - 1) * 50;
-    
-    for (let i = 0; i < 50; i++) {
-        const baseWord = baseWords[i % baseWords.length];
-        words.push({
-            word: baseWord.word,
-            phonetic: baseWord.phonetic,
-            meaning: baseWord.meaning,
-            example: baseWord.example
-        });
-    }
-    return words;
 }
 
 // 更新单词卡片
