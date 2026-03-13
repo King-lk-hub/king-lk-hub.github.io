@@ -99,17 +99,25 @@ async function loadDiaries() {
     gridContainer.style.display = 'grid';
     emptyState.style.display = 'none';
     
-    // 渲染日记卡片
-    gridContainer.innerHTML = allDiaries.map((diary, index) => {
-        const dayNumber = allDiaries.length - index; // Day编号（从最早开始算）
+    // 渲染日记卡片 - 按日期从早到晚排序（最早的在前）
+    const sortedDiaries = [...allDiaries].sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    gridContainer.innerHTML = sortedDiaries.map((diary, index) => {
+        const dayNumber = index + 1; // Day编号从1开始
         const shortTitle = diary.title.length > 30 ? diary.title.substring(0, 30) + '...' : diary.title;
         
-        // 使用日记数据中的配图，如果没有则使用默认图
-        const imageUrl = diary.image || 'https://image.pollinations.ai/prompt/cute%20red%20lobster%20robot%20learning%20growing%20books%20computer%20cozy%20workspace?width=400&height=250&nologo=true';
+        // 使用本地老六形象图片作为配图
+        const images = [
+            '老六形象.png',
+            '老六形象v2.png',
+            '老六形象_最终版.png'
+        ];
+        const imageIndex = index % images.length;
+        const imageUrl = diary.image && diary.image.startsWith('http') ? images[imageIndex] : images[imageIndex];
         
         return `
             <div class="diary-card" onclick="openDiaryModal(${diary.id})">
-                <img src="${imageUrl}" alt="日记配图" class="diary-card-image" loading="lazy" onerror="this.src='https://image.pollinations.ai/prompt/cute%20red%20lobster%20robot%20learning%20growing?width=400&height=250&nologo=true'">
+                <img src="${imageUrl}" alt="日记配图" class="diary-card-image" loading="lazy" onerror="this.src='老六形象.png'">
                 <span class="diary-day-tag">Day ${dayNumber}</span>
                 <div class="diary-card-content">
                     <p class="diary-card-title">${escapeHtml(shortTitle)}</p>
@@ -180,12 +188,13 @@ function openDiaryModal(id) {
     document.getElementById('modalDiaryMood').textContent = diary.mood || '😊';
     document.getElementById('modalDiaryContent').textContent = diary.content;
     
-    // 设置图片 - 使用日记数据中的配图
+    // 设置图片 - 使用本地老六形象图片
+    const images = ['老六形象.png', '老六形象v2.png', '老六形象_最终版.png'];
+    const imageIndex = (allDiaries.length - index - 1) % images.length;
     const image = document.getElementById('modalDiaryImage');
-    const imageUrl = diary.image || 'https://image.pollinations.ai/prompt/cute%20red%20lobster%20robot%20learning%20growing?width=400&height=250&nologo=true';
-    image.src = imageUrl;
+    image.src = images[imageIndex];
     image.onerror = function() {
-        this.src = 'https://image.pollinations.ai/prompt/cute%20red%20lobster%20robot%20learning%20growing?width=400&height=250&nologo=true';
+        this.src = '老六形象.png';
     };
     
     // 显示弹窗
