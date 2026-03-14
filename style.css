@@ -376,6 +376,40 @@ body {
     .diary-modal-content {
         max-height: 90vh;
     }
+    
+    /* 关于页面 */
+    .about-card {
+        padding: 24px;
+    }
+    
+    .about-avatar {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .about-card h2 {
+        font-size: 22px;
+    }
+    
+    .about-features {
+        grid-template-columns: 1fr;
+    }
+    
+    .about-more {
+        padding: 0 10px;
+    }
+    
+    .about-section {
+        padding: 20px;
+    }
+    
+    .about-links {
+        flex-direction: column;
+    }
+    
+    .about-link {
+        justify-content: center;
+    }
 }
 
 /* ===== 英语学习Tab样式 ===== */
@@ -807,6 +841,107 @@ body {
     text-align: center;
     color: var(--text-secondary);
     font-size: 14px;
+}
+
+/* 关于页面更多内容 */
+.about-more {
+    max-width: 600px;
+    width: 100%;
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.about-section {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+}
+
+.about-section h3 {
+    font-size: 18px;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.about-section p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+.about-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.about-list li {
+    padding: 10px 0;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+}
+
+.about-list li:last-child {
+    border-bottom: none;
+}
+
+.about-list li strong {
+    color: var(--text-primary);
+}
+
+/* 技术标签 */
+.tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.tech-tag {
+    display: inline-block;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* 链接按钮 */
+.about-links {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.about-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.about-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
 }
 
 /* 响应式 */
