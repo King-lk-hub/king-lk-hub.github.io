@@ -310,7 +310,7 @@ def merge_news(all_news):
     for i, news in enumerate(merged, 1):
         news['id'] = i
     
-    return merged[:20]  # 最多20条
+    return merged[:50]  # 最多50条
 
 def update_news_file():
     """更新新闻数据文件"""
@@ -320,28 +320,58 @@ def update_news_file():
     print("正在获取热门新闻...")
     all_news = []
     
-    # 1. 百度热搜
+    # 每个分类目标数量
+    target_per_category = 10
+    
+    # 1. 百度热搜 - 科技/生活/AI 为主
     print("📱 抓取百度热搜...")
     baidu_news = fetch_baidu_hot_news()
     all_news.extend(baidu_news)
     time.sleep(1)
     
-    # 2. 微博热搜
+    # 2. 微博热搜 - 生活/娱乐
     print("📱 抓取微博热搜...")
     weibo_news = fetch_weibo_hot_news()
     all_news.extend(weibo_news)
     time.sleep(1)
     
-    # 3. 知乎热门
+    # 3. 知乎热门 - 生活/科技
     print("📱 抓取知乎热门...")
     zhihu_news = fetch_zhihu_hot_news()
     all_news.extend(zhihu_news)
     time.sleep(1)
     
-    # 4. 国际新闻
-    print("🌍 抓取国际新闻...")
-    intl_news = fetch_international_news()
-    all_news.extend(intl_news)
+    # 4. 用Tavily搜各个分类的国际新闻
+    print("🌍 用Tavily搜索国际新闻...")
+    search_queries = [
+        ("international", "国际时事 全球热点 news today"),
+        ("military", "军事新闻 战争 军队 military news"),
+        ("tech", "科技新闻 技术前沿 technology news"),
+        ("ai", "AI 人工智能 大模型 ChatGPT"),
+        ("life", "生活热点 社会新闻 lifestyle")
+    ]
+    
+    for category, query in search_queries:
+        print(f"  🔍 搜索 {category}...")
+        result = tavily_search(query, 10)
+        if result and result.get('results'):
+            for r in result['results']:
+                title = r.get('title', '')
+                if not title or len(title) < 10:
+                    continue
+                all_news.append({
+                    "id": len(all_news) + 1,
+                    "category": category,
+                    "categoryName": get_category_name(category),
+                    "title": title,
+                    "summary": r.get('content', '')[:100] if r.get('content') else title,
+                    "content": f"<p>{title}</p><p>{r.get('content', '')}</p>",
+                    "time": datetime.now().strftime("%H:%M"),
+                    "source": "Tavily",
+                    "url": r.get('url', ''),
+                    "image": ''
+                })
+        time.sleep(0.5)
     
     # 合并去重
     news_list = merge_news(all_news)
@@ -388,6 +418,19 @@ def push_to_github():
         print(f"❌ 推送失败: {e}")
         return False
 
+def push_to_server():
+    """推送到云服务器"""
+    try:
+        import shutil
+        news_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'news-data.json')
+        server_path = '/usr/share/nginx/html/news-data.json'
+        shutil.copy(news_file, server_path)
+        print("✅ 已推送到云服务器!")
+        return True
+    except Exception as e:
+        print(f"❌ 推送云服务器失败: {e}")
+        return False
+
 def main():
     """主函数"""
     print("=" * 50)
@@ -402,6 +445,9 @@ def main():
     
     # 2. 推送到GitHub
     push_to_github()
+    
+    # 3. 推送到云服务器
+    push_to_server()
     
     print("\n🎉 每日快讯更新完成!")
 
